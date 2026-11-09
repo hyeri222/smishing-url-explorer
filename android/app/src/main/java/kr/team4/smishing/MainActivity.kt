@@ -41,6 +41,7 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        Thread { Endpoint.refresh(applicationContext) }.start()  // 시연 서버 주소를 미리 받아 둔다
         render()  // 기록·보호 상태가 바뀌었을 수 있으니 매번 다시 그림
     }
 

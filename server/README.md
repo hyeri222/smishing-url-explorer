@@ -1,5 +1,5 @@
 ---
-title: Smishing URL Explorer API
+title: KoK Smishing Check API
 emoji: 🛡️
 colorFrom: blue
 colorTo: red

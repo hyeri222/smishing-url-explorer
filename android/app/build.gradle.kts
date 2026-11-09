@@ -15,6 +15,10 @@ android {
         // 검사 서버 주소. 개발 중엔 'adb reverse tcp:8000 tcp:8000' 후 PC 로컬 서버를 127.0.0.1로 연결.
         // 배포용: gradlew assembleRelease -PapiBase=https://<스페이스주소>.hf.space
         buildConfigField("String", "API_BASE", "\"${project.findProperty("apiBase") ?: "http://127.0.0.1:8000"}\"")
+        // 시연용(노트북 서버 + 무료 터널): 주소가 바뀌므로 허깅페이스의 endpoint.txt에서 읽는다.
+        //   gradlew assembleDebug -Ppublic  → ENDPOINT_URL 사용
+        val endpoint = if (project.hasProperty("public")) "https://huggingface.co/6hzl/kok-canine/resolve/main/endpoint.txt" else ""
+        buildConfigField("String", "ENDPOINT_URL", "\"$endpoint\"")
     }
 
     buildFeatures { buildConfig = true }

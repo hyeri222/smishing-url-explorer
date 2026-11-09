@@ -23,8 +23,16 @@ data class CheckResult(
 object Api {
     private const val TIMEOUT_MS = 4000  // 서버는 단축 주소 풀기(최대 1.5초) + 주소 조회(최대 0.9초) + AI 계산을 한다
 
-    fun check(url: String): CheckResult? = try {
-        val conn = URL("${BuildConfig.API_BASE}/api/check").openConnection() as HttpURLConnection
+    fun check(ctx: Context, url: String): CheckResult? {
+        val base = Endpoint.base(ctx)
+        post(base, url)?.let { return it }
+        // 시연 서버(무료 터널)는 켤 때마다 주소가 바뀐다 → 새 주소를 받아 한 번 더 시도
+        val fresh = Endpoint.refresh(ctx)
+        return if (fresh != null && fresh != base) post(fresh, url) else null
+    }
+
+    private fun post(base: String, url: String): CheckResult? = try {
+        val conn = URL("$base/api/check").openConnection() as HttpURLConnection
         conn.connectTimeout = TIMEOUT_MS
         conn.readTimeout = TIMEOUT_MS
         conn.requestMethod = "POST"
@@ -34,7 +42,7 @@ object Api {
         if (conn.responseCode != 200) null
         else parse(JSONObject(conn.inputStream.bufferedReader().readText()))
     } catch (e: Exception) {
-        android.util.Log.w("SmishingApi", "검사 서버 호출 실패: ${e.javaClass.simpleName}: ${e.message}")
+        android.util.Log.w("SmishingApi", "검사 서버 호출 실패($base): ${e.javaClass.simpleName}: ${e.message}")
         null
     }
 
@@ -49,6 +57,34 @@ object Api {
             reasons = (0 until reasons.length()).map { reasons.getJSONObject(it).optString("text") },
             source = j.optString("source"),
         )
+    }
+}
+
+/**
+ * 검사 서버 주소. ENDPOINT_URL(허깅페이스에 둔 endpoint.txt)이 있으면 거기 적힌 주소를 쓰고,
+ * 받은 주소는 기기에 저장해 두었다가 다음에 바로 쓴다. 없으면 빌드할 때 넣은 API_BASE.
+ */
+object Endpoint {
+    private fun sp(ctx: Context) = ctx.getSharedPreferences("app", Context.MODE_PRIVATE)
+
+    fun base(ctx: Context): String {
+        if (BuildConfig.ENDPOINT_URL.isEmpty()) return BuildConfig.API_BASE
+        return sp(ctx).getString("endpoint", null) ?: refresh(ctx) ?: BuildConfig.API_BASE
+    }
+
+    /** endpoint.txt를 다시 읽는다(네트워크 사용, 메인 스레드에서 부르지 말 것) */
+    fun refresh(ctx: Context): String? {
+        if (BuildConfig.ENDPOINT_URL.isEmpty()) return null
+        return try {
+            val conn = URL(BuildConfig.ENDPOINT_URL).openConnection() as HttpURLConnection
+            conn.connectTimeout = 3000
+            conn.readTimeout = 3000
+            val u = conn.inputStream.bufferedReader().readText().trim().trimEnd('/')
+            if (!u.matches(Regex("https://[a-z0-9.-]+"))) null  // https 주소만 받는다
+            else u.also { sp(ctx).edit().putString("endpoint", it).apply() }
+        } catch (e: Exception) {
+            null
+        }
     }
 }
 

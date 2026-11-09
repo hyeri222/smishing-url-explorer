@@ -71,7 +71,7 @@ class LinkActivity : Activity() {
         val started = System.currentTimeMillis()
         for (i in 1..3) main.postDelayed({ if (my == request) steps(i) }, STEP_MS * i)
         Thread {
-            val r = Api.check(url)
+            val r = Api.check(this, url)
             val wait = (STEP_MS * 3 + 250) - (System.currentTimeMillis() - started)
             main.postDelayed({ if (my == request && !isFinishing) onResult(url, r) }, maxOf(0, wait))
         }.start()

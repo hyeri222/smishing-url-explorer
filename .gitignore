@@ -32,3 +32,6 @@ _기획서_작업파일/
 # 개발 중 찍은 에뮬레이터 화면
 android/screens/
 android/build_log.txt
+
+# 만든 APK
+dist/
