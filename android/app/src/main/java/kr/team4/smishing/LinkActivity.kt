@@ -90,10 +90,7 @@ class LinkActivity : Activity() {
                 toast("안전한 링크입니다. ${browserName()}에서 열었어요.")
                 openAndFinish(url)
             }
-            Verdict.CAUTION -> {
-                toast("주의가 필요한 주소입니다. $reason", long = true)
-                openAndFinish(url)
-            }
+            Verdict.CAUTION -> showCaution(url, r!!)  // 바로 열지 않고 이유를 보여 준 뒤 사용자가 고르게 한다
             Verdict.DANGER -> showDanger(url, r!!)
             Verdict.UNKNOWN -> showUnknown(url, r)
         }
@@ -222,6 +219,48 @@ class LinkActivity : Activity() {
         fullScreen(header, body, footer)
     }
 
+    // ---------- ②-1 주의 (아래에서 올라오는 확인 창) ----------
+
+    private fun showCaution(url: String, r: CheckResult) {
+        root.removeAllViews()
+        root.setBackgroundColor(C.SCRIM)
+        lightStatusBar(false)
+        val amber = Verdict.CAUTION.fg
+        val sheet = Ui.col(this, 18).apply { background = Ui.topRounded(context, C.WHITE, 28) }
+        Ui.pad(sheet, 24, 28, 24, 28)
+
+        val head = Ui.row(this, 12)
+        head.addView(Ui.text(this, "!", 24, amber, 800, center = true).apply {
+            background = Ui.rounded(context, Verdict.CAUTION.bg, 14)
+            layoutParams = LinearLayout.LayoutParams(Ui.dp(context, 44), Ui.dp(context, 44))
+        })
+        val titles = Ui.col(this, 2)
+        titles.add(Ui.text(this, "주의가 필요한 링크예요", 22, weight = 800))
+        titles.add(Ui.text(this, "위험 점수 ${r.score ?: 0} · 아직 열지 않았어요", 14, amber, 600))
+        head.add(titles, 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        sheet.add(head)
+
+        val why = Ui.col(this, 8)
+        why.add(Ui.text(this, "주의할 점", 14, C.G500, 700))
+        val reasons = r.reasons.take(3).ifEmpty { listOf("AI가 의심스러운 주소 형태라고 판단했습니다.") }
+        reasons.forEach { why.add(bullet(it, amber)) }
+        sheet.add(why)
+        sheet.add(urlBox(url))
+        sheet.add(Ui.text(this, "보낸 사람이 확실하지 않다면 열지 마세요. 열더라도 개인정보나 결제 정보는 입력하지 마세요.",
+            14, C.G600, lineSpacing = 1.25f))
+
+        val grid = Ui.row(this, 10)
+        grid.add(Ui.outlineButton(this, "확인하고 열기") { openAnyway(url, danger = false, caution = true) },
+            0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        grid.add(Ui.primaryButton(this, "열지 않기", size = 17, bg = C.INK) { closeSafely() },
+            0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        sheet.add(grid)
+
+        root.addView(sheet, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM))
+        insets(null, sheet)
+    }
+
     // ---------- ③ 확인 못 함 ----------
 
     private fun showUnknown(url: String, r: CheckResult?) {
@@ -284,9 +323,12 @@ class LinkActivity : Activity() {
         add(Ui.text(context, defang(url), 15, C.G700, mono = true).apply { setTextIsSelectable(false) })
     }
 
-    private fun openAnyway(url: String, danger: Boolean) {
-        toast(if (danger) "위험한 링크를 열었습니다. 아무것도 입력하거나 설치하지 마세요."
-              else "확인하지 못한 링크입니다. 개인정보 입력에 주의하세요.", long = true)
+    private fun openAnyway(url: String, danger: Boolean, caution: Boolean = false) {
+        toast(when {
+            danger -> "위험한 링크를 열었습니다. 아무것도 입력하거나 설치하지 마세요."
+            caution -> "주의가 필요한 링크입니다. 개인정보 입력에 주의하세요."
+            else -> "확인하지 못한 링크입니다. 개인정보 입력에 주의하세요."
+        }, long = true)
         openAndFinish(url)
     }
 
