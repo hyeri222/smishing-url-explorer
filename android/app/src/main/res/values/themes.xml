@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">#1F4FD8</item>
+        <item name="android:colorAccent">#1F4FD8</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+    <!-- 링크 검사 화면: 뒤의 문자 앱이 비쳐 보이는 투명 창(어둡게 덮는 막과 시트는 코드에서 그림) -->
+    <style name="OverlayTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:colorAccent">#1F4FD8</item>
+    </style>
+</resources>

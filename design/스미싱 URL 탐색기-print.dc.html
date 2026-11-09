@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="omelette-print-source" content="v1793776413695873 스미싱 URL 탐색기.dc.html">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script src="./doc-page.js"></script>
+<style>doc-page:not(:defined){visibility:hidden}*{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}*{animation-delay:-99s !important;animation-duration:.001s !important;animation-iteration-count:1 !important;animation-fill-mode:both !important;animation-play-state:running !important;transition-duration:0s !important}a{color:#1F4FD8}a:hover{color:#163AA6}</style>
+</helmet>
+<doc-page orientation="landscape" content-width="1880px" content-height="1453px">
+  <section class="page" id="p1">
+    <div style="width:1880px;height:1453px;background:#E9EDF3;font-family:Pretendard,system-ui,sans-serif;color:#0F1B33;padding:56px 0 0;display:flex;flex-direction:column;gap:24px">
+      <div style="padding:0 64px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:20px;font-weight:600;color:#1F4FD8">4조 · 인공지능서비스개발II</div>
+          <div style="font-size:48px;font-weight:800;letter-spacing:-.02em">스미싱 URL 탐색기 — 화면 설계</div>
+        </div>
+        <div style="font-size:22px;color:#475467">링크를 누르는 순간 AI가 먼저 검사하는 스미싱 방지 앱</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,460px);justify-content:center">
+        <div style="display:flex;flex-direction:column;align-items:center"><div style="font-size:24px;font-weight:700">① 처음 설정</div><dc-import name="스미싱 URL 탐색기" start-screen="onboard" hide-panel="{{ true }}" hint-size="460px,972px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;align-items:center"><div style="font-size:24px;font-weight:700">홈</div><dc-import name="스미싱 URL 탐색기" start-screen="home" hide-panel="{{ true }}" hint-size="460px,972px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;align-items:center"><div style="font-size:24px;font-weight:700">문자 속 링크 (시연)</div><dc-import name="스미싱 URL 탐색기" start-screen="sms" hide-panel="{{ true }}" hint-size="460px,972px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;align-items:center"><div style="font-size:24px;font-weight:700">② 위험 경고</div><dc-import name="스미싱 URL 탐색기" start-screen="sms" start-overlay="danger" hide-panel="{{ true }}" hint-size="460px,972px"></dc-import></div>
+      </div>
+    </div>
+  </section>
+  <section class="page" id="p2">
+    <div style="width:1880px;height:1453px;background:#E9EDF3;font-family:Pretendard,system-ui,sans-serif;color:#0F1B33;padding:56px 0 0;display:flex;flex-direction:column;gap:24px">
+      <div style="padding:0 64px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px">
+        <div style="font-size:48px;font-weight:800;letter-spacing:-.02em">판정 결과와 기록</div>
+        <div style="display:flex;gap:20px;font-size:20px;color:#475467;align-items:center">
+          <span style="padding:6px 12px;border-radius:8px;background:#ECFDF3;color:#067647;font-weight:700">0–39 안전 · 바로 열기</span>
+          <span style="padding:6px 12px;border-radius:8px;background:#FFF4E0;color:#B54708;font-weight:700">40–69 주의 · 열면서 안내</span>
+          <span style="padding:6px 12px;border-radius:8px;background:#FEF0EF;color:#C4320A;font-weight:700">70–100 위험 · 경고창</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,460px);justify-content:center">
+        <div style="display:flex;flex-direction:column;align-items:center"><div style="font-size:24px;font-weight:700">③ 확인 못 함</div><dc-import name="스미싱 URL 탐색기" start-screen="sms" start-overlay="unknown" hide-panel="{{ true }}" hint-size="460px,972px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;align-items:center"><div style="font-size:24px;font-weight:700">④ 검사 기록</div><dc-import name="스미싱 URL 탐색기" start-screen="history" hide-panel="{{ true }}" hint-size="460px,972px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;align-items:center"><div style="font-size:24px;font-weight:700">도움말</div><dc-import name="스미싱 URL 탐색기" start-screen="help" hide-panel="{{ true }}" hint-size="460px,972px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;gap:20px;padding:60px 24px 0;font-size:20px;line-height:1.6;color:#344054">
+          <div style="font-size:24px;font-weight:700;color:#0F1B33">판정 흐름</div>
+          <div>1. 링크 터치 → 앱이 먼저 받음 (기본 브라우저 역할)</div>
+          <div>2. 공식 기관·기업 도메인은 휴대폰 안에서 바로 열기</div>
+          <div>3. 그 외: 단축 URL 풀기 → 알려진 피싱 목록 → CANINE 위험 점수</div>
+          <div>4. 목적지를 확인하지 못하면 열지 않고 "확인하지 못했습니다" 창</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</doc-page>
+</x-dc>
+</body>
+</html>

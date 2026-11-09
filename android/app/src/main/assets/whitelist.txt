@@ -1,0 +1,48 @@
+# 공식 도메인(등록 도메인 단위). '.'으로 시작하면 그 아래 전체.
+# 단축 URL 서비스(naver.me 등)는 넣지 않는다 — 풀어서 최종 주소로 판단해야 하므로.
+.go.kr
+.mil.kr
+# 포털·메신저
+naver.com
+daum.net
+kakao.com
+kakaocorp.com
+youtube.com
+# google.com은 넣지 않음: 구글 사이트·설문(sites/docs.google.com)이 피싱에 쓰이는 경우가 있음
+# 택배·우편
+cjlogistics.com
+hanjin.com
+hanjin.co.kr
+lotteglogis.com
+epost.go.kr
+logen.co.kr
+kdexp.com
+# 쇼핑
+coupang.com
+gmarket.co.kr
+11st.co.kr
+ssg.com
+# 은행
+kbstar.com
+shinhan.com
+wooribank.com
+hanabank.com
+nonghyup.com
+ibk.co.kr
+kakaobank.com
+tossbank.com
+toss.im
+kbanknow.com
+# 카드
+shinhancard.com
+samsungcard.com
+hyundaicard.com
+lottecard.co.kr
+kbcard.com
+hanacard.co.kr
+bccard.com
+# 공공기관
+nhis.or.kr
+nps.or.kr
+kisa.or.kr
+boho.or.kr

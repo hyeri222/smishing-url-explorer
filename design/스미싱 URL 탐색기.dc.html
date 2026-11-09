@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>body{margin:0;background:#E9EDF3;font-family:Pretendard,system-ui,sans-serif;color:#0F1B33;-webkit-font-smoothing:antialiased}a{color:#1F4FD8}a:hover{color:#163AA6}button{font-family:inherit}*{box-sizing:border-box}</style>
+</helmet>
+<div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;justify-content:center;padding:40px 24px">
+  <sc-if value="{{ showPanel }}" hint-placeholder-val="{{ true }}">
+  <aside style="flex:1 1 300px;max-width:360px;display:flex;flex-direction:column;gap:28px;padding-top:24px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:13px;font-weight:600;color:#1F4FD8;letter-spacing:.02em">4조 · 인공지능서비스개발II</div>
+      <h1 style="margin:0;font-size:28px;line-height:1.3;font-weight:800;letter-spacing:-.02em">스미싱 URL 탐색기</h1>
+      <p style="margin:0;font-size:15px;line-height:1.6;color:#475467;text-wrap:pretty">링크를 누르는 순간 AI가 먼저 검사하는 스미싱 방지 앱. 오른쪽 휴대폰을 직접 눌러 보거나, 아래에서 상황을 골라 보세요.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:12px;font-weight:700;color:#667085;letter-spacing:.04em">시작 지점</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button onClick="{{ goOnboard }}" style="height:40px;padding:0 14px;white-space:nowrap;flex:none;border-radius:10px;border:1px solid #D0D5DD;background:#fff;font-size:14px;font-weight:600;color:#0F1B33;cursor:pointer" style-hover="background:#F5F7FB">① 처음 설정</button>
+        <button onClick="{{ goHome }}" style="height:40px;padding:0 14px;white-space:nowrap;flex:none;border-radius:10px;border:1px solid #D0D5DD;background:#fff;font-size:14px;font-weight:600;color:#0F1B33;cursor:pointer" style-hover="background:#F5F7FB">홈</button>
+        <button onClick="{{ goSms }}" style="height:40px;padding:0 14px;white-space:nowrap;flex:none;border-radius:10px;border:1px solid #D0D5DD;background:#fff;font-size:14px;font-weight:600;color:#0F1B33;cursor:pointer" style-hover="background:#F5F7FB">문자 앱</button>
+        <button onClick="{{ goHistory }}" style="height:40px;padding:0 14px;white-space:nowrap;flex:none;border-radius:10px;border:1px solid #D0D5DD;background:#fff;font-size:14px;font-weight:600;color:#0F1B33;cursor:pointer" style-hover="background:#F5F7FB">④ 검사 기록</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:12px;font-weight:700;color:#667085;letter-spacing:.04em">문자 속 링크 누르기</div>
+      <sc-for list="{{ demoLinks }}" as="d" hint-placeholder-count="5">
+        <button onClick="{{ d.tap }}" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid #E4E7EC;background:#fff;cursor:pointer;text-align:left" style-hover="border-color:#98A2B3">
+          <span style="flex:none;min-width:64px;height:26px;padding:0 8px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:{{ d.bg }};color:{{ d.fg }}">{{ d.label }}</span>
+          <span style="font-size:14px;line-height:1.4;color:#344054">{{ d.title }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:14px;background:#fff;border:1px solid #E4E7EC">
+      <div style="font-size:12px;font-weight:700;color:#667085;letter-spacing:.04em">판정 기준 (CANINE 위험 점수)</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:14px;align-items:center">
+        <span style="height:24px;padding:0 8px;border-radius:6px;background:#ECFDF3;color:#067647;font-weight:700;font-size:12px;display:flex;align-items:center">0–39 안전</span><span style="color:#475467">바로 엽니다</span>
+        <span style="height:24px;padding:0 8px;border-radius:6px;background:#FFF4E0;color:#B54708;font-weight:700;font-size:12px;display:flex;align-items:center">40–69 주의</span><span style="color:#475467">열면서 짧게 안내합니다</span>
+        <span style="height:24px;padding:0 8px;border-radius:6px;background:#FEF0EF;color:#C4320A;font-weight:700;font-size:12px;display:flex;align-items:center">70–100 위험</span><span style="color:#475467">경고창을 띄웁니다</span>
+      </div>
+    </div>
+  </aside>
+  </sc-if>
+
+  <div style="flex:none">
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" hint-size="412px,892px">
+      <div style="position:relative;height:812px;overflow:hidden;background:#F3F5F9;font-family:Pretendard,system-ui,sans-serif;color:#0F1B33">
+
+        <sc-if value="{{ isOnboard }}" hint-placeholder-val="{{ true }}">
+          <div data-screen-label="01 처음 설정" style="position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;padding:24px 24px 28px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#1F4FD8">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#1F4FD8"><path d="M12 2 4 5v6c0 5 3.4 9.5 8 11 4.6-1.5 8-6 8-11V5l-8-3z"></path></svg>
+              스미싱 URL 탐색기
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px">
+              <div style="width:112px;height:112px;border-radius:32px;background:#EAF0FF;display:flex;align-items:center;justify-content:center">
+                <svg width="60" height="60" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.5 8 11 4.6-1.5 8-6 8-11V5l-8-3z" fill="#1F4FD8"></path><path d="m8.5 12 2.5 2.5 4.5-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <h2 style="margin:0;font-size:30px;line-height:1.3;font-weight:800;letter-spacing:-.03em">문자 속 링크,<br>누르기 전에<br>먼저 검사해 드려요</h2>
+                <p style="margin:0;font-size:17px;line-height:1.6;color:#475467;text-wrap:pretty">한 번만 켜 두면 평소처럼 누르기만 하면 됩니다. 위험할 때만 알려 드려요.</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#344054"><span style="flex:none;width:24px;height:24px;border-radius:12px;background:#EAF0FF;color:#1F4FD8;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center">1</span>은행·택배·공공기관 공식 주소는 바로 열립니다</div>
+                <div style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#344054"><span style="flex:none;width:24px;height:24px;border-radius:12px;background:#EAF0FF;color:#1F4FD8;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center">2</span>처음 보는 주소는 AI가 위험 점수를 매깁니다</div>
+                <div style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#344054"><span style="flex:none;width:24px;height:24px;border-radius:12px;background:#EAF0FF;color:#1F4FD8;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center">3</span>위험하면 열기 전에 한 번 더 묻습니다</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <p style="margin:0;font-size:13px;line-height:1.55;color:#667085;text-wrap:pretty">누른 링크 주소는 검사를 위해 서버로 보내지며, 저장하지 않습니다. 링크는 검사 후 Chrome으로 엽니다.</p>
+              <button onClick="{{ openRole }}" style="height:60px;border-radius:16px;border:0;background:#1F4FD8;color:#fff;font-size:19px;font-weight:700;cursor:pointer" style-hover="background:#1A44BD" style-active="background:#163AA6">보호 켜기</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="홈" style="position:absolute;inset:0 0 72px 0;overflow:auto;display:flex;flex-direction:column;gap:16px;padding:16px 20px 24px">
+            <div style="display:flex;align-items:center;justify-content:space-between;height:44px">
+              <div style="font-size:20px;font-weight:800;letter-spacing:-.02em">스미싱 URL 탐색기</div>
+            </div>
+            <sc-if value="{{ protect }}" hint-placeholder-val="{{ true }}">
+              <div style="border-radius:24px;background:#1F4FD8;color:#fff;padding:24px;display:flex;flex-direction:column;gap:18px">
+                <div style="display:flex;align-items:center;gap:14px">
+                  <div style="width:56px;height:56px;border-radius:18px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center">
+                    <svg width="32" height="32" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.5 8 11 4.6-1.5 8-6 8-11V5l-8-3z" fill="#fff"></path><path d="m8.5 12 2.5 2.5 4.5-5" stroke="#1F4FD8" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:2px">
+                    <div style="font-size:24px;font-weight:800;letter-spacing:-.02em">보호 중입니다</div>
+                    <div style="font-size:15px;color:#D6E0FF">문자 속 링크를 누르면 먼저 검사해요</div>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div style="border-radius:14px;background:rgba(255,255,255,.12);padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;color:#D6E0FF">검사한 링크</span><span style="font-size:24px;font-weight:800">{{ statTotal }}건</span></div>
+                  <div style="border-radius:14px;background:rgba(255,255,255,.12);padding:12px 14px;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;color:#D6E0FF">막은 위험 링크</span><span style="font-size:24px;font-weight:800">{{ statDanger }}건</span></div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ protectOff }}" hint-placeholder-val="{{ false }}">
+              <div style="border-radius:24px;background:#fff;border:2px solid #FDA29B;padding:24px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <div style="font-size:24px;font-weight:800;color:#C4320A">보호가 꺼져 있습니다</div>
+                  <div style="font-size:15px;line-height:1.5;color:#475467">지금은 링크가 검사 없이 바로 열립니다.</div>
+                </div>
+                <button onClick="{{ openRole }}" style="height:54px;border-radius:14px;border:0;background:#1F4FD8;color:#fff;font-size:17px;font-weight:700;cursor:pointer">보호 다시 켜기</button>
+              </div>
+            </sc-if>
+            <button onClick="{{ goSms }}" style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;border:1px solid #E4E7EC;background:#fff;cursor:pointer;text-align:left" style-hover="border-color:#98A2B3">
+              <div style="flex:none;width:44px;height:44px;border-radius:14px;background:#F2F4F7;display:flex;align-items:center;justify-content:center">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#344054" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4V5z"></path></svg>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:17px;font-weight:700;color:#0F1B33">문자 앱에서 시험해 보기</span>
+                <span style="font-size:14px;color:#667085">시연용 문자 속 링크를 눌러 보세요</span>
+              </div>
+              <span style="font-size:22px;color:#98A2B3">›</span>
+            </button>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <span style="font-size:17px;font-weight:700">최근 검사</span>
+                <button onClick="{{ goHistory }}" style="border:0;background:none;font-size:14px;font-weight:600;color:#1F4FD8;cursor:pointer;padding:6px 0">전체 보기</button>
+              </div>
+              <div style="border-radius:18px;background:#fff;border:1px solid #E4E7EC;overflow:hidden">
+                <sc-for list="{{ recent }}" as="h" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #F2F4F7">
+                    <span style="flex:none;min-width:58px;height:28px;padding:0 8px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:{{ h.bg }};color:{{ h.fg }}">{{ h.label }}</span>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                      <span style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:ui-monospace,Menlo,monospace;letter-spacing:-.02em">{{ h.url }}</span>
+                      <span style="font-size:13px;color:#667085">{{ h.time }} · {{ h.source }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="04 검사 기록" style="position:absolute;inset:0 0 72px 0;overflow:auto;display:flex;flex-direction:column;gap:14px;padding:16px 20px 24px">
+            <div style="display:flex;flex-direction:column;gap:4px;padding-top:6px">
+              <div style="font-size:24px;font-weight:800;letter-spacing:-.02em">검사 기록</div>
+              <div style="font-size:14px;color:#667085">최근 50개까지 이 휴대폰에만 저장됩니다</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+                <button onClick="{{ f.pick }}" style="height:38px;padding:0 16px;white-space:nowrap;flex:none;border-radius:19px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.fg }};font-size:15px;font-weight:600;cursor:pointer">{{ f.name }}</button>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ historyList }}" as="h" hint-placeholder-count="4">
+                <div style="border-radius:16px;background:#fff;border:1px solid #E4E7EC;padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                    <span style="min-width:58px;height:28px;padding:0 10px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:{{ h.bg }};color:{{ h.fg }}">{{ h.label }}</span>
+                    <span style="font-size:13px;color:#98A2B3">{{ h.time }}</span>
+                  </div>
+                  <div style="font-size:15px;font-weight:600;word-break:break-all;font-family:ui-monospace,Menlo,monospace;letter-spacing:-.02em">{{ h.url }}</div>
+                  <div style="font-size:14px;line-height:1.5;color:#475467">{{ h.reason }}</div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ historyEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:40px 0;text-align:center;font-size:15px;color:#98A2B3">해당하는 기록이 없습니다</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isHelp }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="도움말" style="position:absolute;inset:0 0 72px 0;overflow:auto;display:flex;flex-direction:column;gap:14px;padding:16px 20px 24px">
+            <div style="font-size:24px;font-weight:800;letter-spacing:-.02em;padding-top:6px">도움말</div>
+            <a href="tel:118" style="display:flex;align-items:center;gap:14px;padding:18px;border-radius:18px;background:#0F1B33;color:#fff;text-decoration:none">
+              <div style="flex:none;width:48px;height:48px;border-radius:16px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800">118</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:18px;font-weight:700">118 상담 전화</span><span style="font-size:14px;color:#C7CEDB">한국인터넷진흥원 · 24시간 무료</span></div>
+            </a>
+            <div style="border-radius:18px;background:#fff;border:1px solid #E4E7EC;padding:18px;display:flex;flex-direction:column;gap:14px">
+              <div style="font-size:17px;font-weight:700">이미 링크를 눌렀다면</div>
+              <div style="display:flex;gap:12px;font-size:15px;line-height:1.5;color:#344054"><span style="flex:none;width:24px;height:24px;border-radius:12px;background:#FEF0EF;color:#C4320A;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center">1</span>모르는 앱이 설치됐다면 바로 삭제하세요</div>
+              <div style="display:flex;gap:12px;font-size:15px;line-height:1.5;color:#344054"><span style="flex:none;width:24px;height:24px;border-radius:12px;background:#FEF0EF;color:#C4320A;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center">2</span>입력한 비밀번호는 바로 바꾸세요</div>
+              <div style="display:flex;gap:12px;font-size:15px;line-height:1.5;color:#344054"><span style="flex:none;width:24px;height:24px;border-radius:12px;background:#FEF0EF;color:#C4320A;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center">3</span>금융 정보를 입력했다면 은행에 지급 정지를 요청하세요</div>
+            </div>
+            <div style="border-radius:18px;background:#fff;border:1px solid #E4E7EC;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid #F2F4F7">
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:700">링크 보호</span><span style="font-size:13px;color:#667085">기본 브라우저 역할로 링크를 먼저 받습니다</span></div>
+                <button onClick="{{ toggleProtect }}" style="flex:none;width:56px;height:32px;border-radius:16px;border:0;padding:3px;background:{{ toggleBg }};display:flex;justify-content:{{ toggleJustify }};cursor:pointer"><span style="width:26px;height:26px;border-radius:13px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span></button>
+              </div>
+              <div style="padding:16px 18px;display:flex;flex-direction:column;gap:6px">
+                <span style="font-size:16px;font-weight:700">개인정보</span>
+                <span style="font-size:14px;line-height:1.55;color:#475467;text-wrap:pretty">공식 기관·기업 주소는 휴대폰 안에서 확인하고 서버로 보내지 않습니다. 서버는 링크 페이지를 열지 않고 주소만 검사하며, 검사한 주소를 저장하지 않습니다.</span>
+              </div>
+              <div style="padding:0 18px 16px;font-size:13px;line-height:1.5;color:#98A2B3">카카오톡처럼 자체 브라우저로 여는 앱의 링크는 검사할 수 없습니다.</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showNav }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:0;right:0;bottom:0;height:72px;background:#fff;border-top:1px solid #E4E7EC;display:grid;grid-template-columns:repeat(3,1fr)">
+            <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="3">
+              <button onClick="{{ n.go }}" style="border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:{{ n.color }}">
+                <span style="width:28px;height:4px;border-radius:2px;background:{{ n.bar }}"></span>
+                <span style="font-size:15px;font-weight:700">{{ n.name }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isSms }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="문자 앱 (시연)" style="position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;font-family:Roboto,Pretendard,system-ui,sans-serif">
+            <div style="flex:none;height:64px;display:flex;align-items:center;gap:8px;padding:0 8px;border-bottom:1px solid #EEF0F3">
+              <button onClick="{{ goHome }}" style="width:48px;height:48px;border:0;background:none;font-size:22px;color:#344054;cursor:pointer">←</button>
+              <div style="width:36px;height:36px;border-radius:18px;background:#E4E7EC;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#475467">#</div>
+              <div style="display:flex;flex-direction:column"><span style="font-size:17px;font-weight:600">메시지</span><span style="font-size:12px;color:#98A2B3">시연용 가짜 문자</span></div>
+            </div>
+            <div style="flex:1;overflow:auto;padding:16px 14px;display:flex;flex-direction:column;gap:18px;background:#F7F8FA">
+              <sc-for list="{{ smsList }}" as="m" hint-placeholder-count="5">
+                <div style="display:flex;flex-direction:column;gap:6px;max-width:86%">
+                  <span style="font-size:13px;font-weight:600;color:#475467;padding-left:4px">{{ m.from }}</span>
+                  <div style="background:#fff;border:1px solid #EAECF0;border-radius:4px 18px 18px 18px;padding:12px 14px;font-size:16px;line-height:1.5;color:#1D2939">
+                    <span>{{ m.text }} </span><button onClick="{{ m.tap }}" style="display:inline;border:0;background:none;padding:0;font:inherit;color:#1F4FD8;text-decoration:underline;cursor:pointer;word-break:break-all;text-align:left">{{ m.display }}</button>
+                  </div>
+                  <span style="font-size:12px;color:#98A2B3;padding-left:4px">{{ m.time }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:none;height:60px;border-top:1px solid #EEF0F3;display:flex;align-items:center;padding:0 14px"><div style="flex:1;height:40px;border-radius:20px;background:#F2F4F7;display:flex;align-items:center;padding:0 16px;font-size:15px;color:#98A2B3">문자 메시지</div></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isBrowser }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="브라우저로 열림" style="position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;font-family:Roboto,Pretendard,system-ui,sans-serif">
+            <div style="flex:none;height:60px;display:flex;align-items:center;gap:8px;padding:0 8px;background:#F1F3F4">
+              <button onClick="{{ goSms }}" style="width:44px;height:44px;border:0;background:none;font-size:20px;color:#3C4043;cursor:pointer">←</button>
+              <div style="flex:1;height:40px;border-radius:20px;background:#fff;display:flex;align-items:center;padding:0 16px;font-size:15px;color:#3C4043;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ browserHost }}</div>
+            </div>
+            <sc-if value="{{ browserBanner }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:none;display:flex;gap:12px;padding:14px 16px;background:{{ bannerBg }};border-bottom:1px solid {{ bannerBorder }}">
+                <span style="flex:none;width:26px;height:26px;border-radius:13px;background:{{ bannerFg }};color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center">!</span>
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px;font-family:Pretendard,system-ui,sans-serif">
+                  <span style="font-size:16px;font-weight:700;color:{{ bannerFg }}">{{ bannerTitle }}</span>
+                  <span style="font-size:14px;line-height:1.5;color:#344054">{{ bannerText }}</span>
+                </div>
+              </div>
+            </sc-if>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;background:repeating-linear-gradient(45deg,#FAFAFA 0 12px,#F4F5F7 12px 24px)">
+              <span style="font-size:13px;font-family:ui-monospace,Menlo,monospace;color:#98A2B3">Chrome에서 열린 페이지</span>
+              <span style="font-size:13px;font-family:ui-monospace,Menlo,monospace;color:#98A2B3">{{ browserHost }}</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ ovRole }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:rgba(15,27,51,.45);display:flex;align-items:center;justify-content:center;padding:28px;font-family:Roboto,Pretendard,system-ui,sans-serif">
+            <div style="width:100%;border-radius:28px;background:#F3EDF7;padding:24px;display:flex;flex-direction:column;gap:16px">
+              <div style="font-size:22px;line-height:1.35;color:#1D1B20">스미싱 URL 탐색기을(를) 기본 브라우저 앱으로 설정하시겠습니까?</div>
+              <div style="font-size:14px;line-height:1.5;color:#49454F">링크를 열 때 이 앱이 먼저 사용됩니다.</div>
+              <div style="display:flex;justify-content:flex-end;gap:8px">
+                <button onClick="{{ closeOv }}" style="height:44px;padding:0 14px;border:0;background:none;color:#6750A4;font-size:15px;font-weight:600;cursor:pointer;border-radius:22px">취소</button>
+                <button onClick="{{ confirmRole }}" style="height:44px;padding:0 14px;border:0;background:none;color:#6750A4;font-size:15px;font-weight:600;cursor:pointer;border-radius:22px">기본으로 설정</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ ovChecking }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:rgba(15,27,51,.45);display:flex;flex-direction:column;justify-content:flex-end">
+            <div style="border-radius:28px 28px 0 0;background:#fff;padding:28px 24px 32px;display:flex;flex-direction:column;gap:20px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="font-size:22px;font-weight:800;letter-spacing:-.02em">링크를 검사하고 있어요</div>
+                <div style="font-size:14px;font-family:ui-monospace,Menlo,monospace;color:#667085;word-break:break-all">{{ cur.defanged }}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <sc-for list="{{ checkSteps }}" as="s" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <span style="flex:none;width:26px;height:26px;border-radius:13px;background:{{ s.dotBg }};color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ s.mark }}</span>
+                    <span style="font-size:16px;color:{{ s.fg }};font-weight:{{ s.weight }}">{{ s.name }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font-size:13px;color:#98A2B3">페이지를 열지 않고 주소만 확인합니다</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ ovDanger }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="02 위험 경고" style="position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;overflow:auto">
+            <div style="flex:none;background:#D92D20;color:#fff;padding:28px 24px 26px;display:flex;flex-direction:column;gap:14px">
+              <div style="width:56px;height:56px;border-radius:18px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center">
+                <svg width="32" height="32" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z" fill="#fff"></path><path d="M12 9.5v5" stroke="#D92D20" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="17.2" r="1.2" fill="#D92D20"></circle></svg>
+              </div>
+              <div style="font-size:30px;line-height:1.3;font-weight:800;letter-spacing:-.03em">이 링크는 위험합니다.<br>여시겠습니까?</div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.25);overflow:hidden"><div style="height:100%;width:{{ cur.scorePct }};background:#fff;border-radius:4px"></div></div>
+                <span style="font-size:15px;font-weight:700">위험 점수 {{ cur.score }}</span>
+              </div>
+            </div>
+            <div style="flex:1;padding:22px 24px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:14px;font-weight:700;color:#667085">위험한 이유</div>
+                <sc-for list="{{ cur.reasons }}" as="r" hint-placeholder-count="2">
+                  <div style="display:flex;gap:10px;font-size:17px;line-height:1.5;color:#0F1B33"><span style="flex:none;width:6px;height:6px;border-radius:3px;background:#D92D20;margin-top:11px"></span><span style="text-wrap:pretty">{{ r }}</span></div>
+                </sc-for>
+              </div>
+              <div style="border-radius:12px;background:#F2F4F7;padding:12px 14px;display:flex;flex-direction:column;gap:4px">
+                <span style="font-size:12px;font-weight:600;color:#667085">누른 주소</span>
+                <span style="font-size:15px;font-family:ui-monospace,Menlo,monospace;word-break:break-all;color:#344054">{{ cur.defanged }}</span>
+              </div>
+              <button onClick="{{ toggleAfter }}" style="display:flex;align-items:center;justify-content:space-between;border:0;background:none;padding:6px 0;font-size:16px;font-weight:700;color:#0F1B33;cursor:pointer">이미 눌렀다면 이렇게 하세요 <span style="color:#98A2B3">{{ afterArrow }}</span></button>
+              <sc-if value="{{ showAfter }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.5;color:#344054;margin-top:-8px">
+                  <span>1. 모르는 앱이 설치됐다면 바로 삭제</span>
+                  <span>2. 입력한 비밀번호 변경</span>
+                  <span>3. 은행에 지급 정지 요청</span>
+                  <a href="tel:118" style="margin-top:4px;height:44px;border-radius:12px;border:1px solid #D0D5DD;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#0F1B33;text-decoration:none">118 상담 전화하기</a>
+                </div>
+              </sc-if>
+            </div>
+            <div style="flex:none;padding:12px 24px 24px;display:flex;flex-direction:column;gap:6px;align-items:stretch">
+              <button onClick="{{ closeDanger }}" style="height:60px;border-radius:16px;border:0;background:#0F1B33;color:#fff;font-size:19px;font-weight:700;cursor:pointer" style-hover="background:#1D2B4A">닫기 (안전)</button>
+              <button onClick="{{ forceOpen }}" style="height:44px;border:0;background:none;color:#667085;font-size:14px;text-decoration:underline;cursor:pointer">그래도 열기</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ ovUnknown }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="03 확인 못 함" style="position:absolute;inset:0;background:#fff;display:flex;flex-direction:column">
+            <div style="flex:none;background:#344054;color:#fff;padding:28px 24px 26px;display:flex;flex-direction:column;gap:14px">
+              <div style="width:56px;height:56px;border-radius:18px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800">?</div>
+              <div style="font-size:30px;line-height:1.3;font-weight:800;letter-spacing:-.03em">이 링크를<br>확인하지 못했습니다</div>
+              <div style="font-size:16px;line-height:1.5;color:#D0D5DD">안전한지 알 수 없어 열지 않았어요.</div>
+            </div>
+            <div style="flex:1;padding:22px 24px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="font-size:14px;font-weight:700;color:#667085">확인하지 못한 이유</div>
+                <sc-for list="{{ cur.reasons }}" as="r" hint-placeholder-count="1">
+                  <div style="display:flex;gap:10px;font-size:17px;line-height:1.5"><span style="flex:none;width:6px;height:6px;border-radius:3px;background:#344054;margin-top:11px"></span><span style="text-wrap:pretty">{{ r }}</span></div>
+                </sc-for>
+              </div>
+              <div style="border-radius:12px;background:#F2F4F7;padding:12px 14px;display:flex;flex-direction:column;gap:4px">
+                <span style="font-size:12px;font-weight:600;color:#667085">누른 주소</span>
+                <span style="font-size:15px;font-family:ui-monospace,Menlo,monospace;word-break:break-all;color:#344054">{{ cur.defanged }}</span>
+              </div>
+              <div style="font-size:15px;line-height:1.55;color:#475467;text-wrap:pretty">보낸 사람을 모르거나 급하게 무언가를 요구하는 문자라면 열지 마세요. 아는 사람이라면 전화로 먼저 확인해 보세요.</div>
+            </div>
+            <div style="flex:none;padding:12px 24px 24px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <button onClick="{{ retry }}" style="height:60px;border-radius:16px;border:1px solid #D0D5DD;background:#fff;color:#0F1B33;font-size:17px;font-weight:700;cursor:pointer">다시 검사</button>
+                <button onClick="{{ closeDanger }}" style="height:60px;border-radius:16px;border:0;background:#0F1B33;color:#fff;font-size:17px;font-weight:700;cursor:pointer">닫기</button>
+              </div>
+              <button onClick="{{ forceOpen }}" style="height:40px;border:0;background:none;color:#667085;font-size:14px;text-decoration:underline;cursor:pointer">그래도 열기</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:16px;right:16px;bottom:88px;border-radius:14px;background:#0F1B33;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(15,27,51,.25)">
+            <span style="flex:none;width:10px;height:10px;border-radius:5px;background:{{ toastDot }}"></span>
+            <span style="font-size:15px;line-height:1.45">{{ toastText }}</span>
+          </div>
+        </sc-if>
+      </div>
+    </x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onboard&quot;,&quot;home&quot;,&quot;sms&quot;,&quot;history&quot;,&quot;help&quot;],&quot;default&quot;:&quot;onboard&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;checkDelay&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:600,&quot;max&quot;:4000,&quot;step&quot;:100,&quot;unit&quot;:&quot;ms&quot;,&quot;default&quot;:1800,&quot;tsType&quot;:&quot;number&quot;}}">
+const V = {
+  danger:   { label: '위험', bg: '#FEF0EF', fg: '#C4320A' },
+  caution:  { label: '주의', bg: '#FFF4E0', fg: '#B54708' },
+  safe:     { label: '안전', bg: '#ECFDF3', fg: '#067647' },
+  official: { label: '공식', bg: '#EAF0FF', fg: '#1F4FD8' },
+  unknown:  { label: '확인 못 함', bg: '#F2F4F7', fg: '#344054' },
+};
+const LINKS = [
+  { id: 'cj', verdict: 'danger', from: '#Web발신', time: '오전 9:12', title: '택배 주소지 불일치 (사칭)',
+    text: '[CJ대한통운] 고객님 택배가 주소지 불일치로 보관 중입니다. 주소 확인:',
+    display: 'http://cj-1ogistics-demo.top/addr', defanged: 'hxxp://cj-1ogistics-demo[.]top/addr', host: 'cj-1ogistics-demo.top', score: 94,
+    reasons: ['택배사 주소를 흉내 낸 가짜 주소입니다. 영문 l을 숫자 1로 바꿨어요.', '잘 쓰이지 않는 위험한 주소 끝(.top)입니다.'] },
+  { id: 'wed', verdict: 'unknown', from: '010-2931-55xx', time: '오전 10:40', title: '모바일 청첩장 (단축 주소)',
+    text: '저희 두 사람 결혼합니다. 모바일 청첩장 보기',
+    display: 'http://bit.ly/3xQw9Kd', defanged: 'hxxp://bit[.]ly/3xQw9Kd', host: 'bit.ly/3xQw9Kd',
+    reasons: ['단축 주소가 실제로 어디로 가는지 알아내지 못했습니다.'] },
+  { id: 'nhis', verdict: 'official', from: '국민건강보험', time: '오후 1:05', title: '건강검진 안내 (공식 기관)',
+    text: '[국민건강보험] 올해 건강검진 대상자입니다. 검진기관 찾기',
+    display: 'https://www.nhis.or.kr', defanged: 'hxxps://www.nhis[.]or[.]kr', host: 'www.nhis.or.kr',
+    reasons: ['공식 기관 주소입니다. 휴대폰 안에서 바로 확인했어요.'] },
+  { id: 'shop', verdict: 'caution', from: '#Web발신', time: '오후 3:22', title: '쇼핑몰 배송 안내 (처음 보는 주소)',
+    text: '[하루마켓] 주문하신 상품이 출발했습니다. 배송 조회',
+    display: 'https://haru-deliv.kr/t/88231', defanged: 'hxxps://haru-deliv[.]kr/t/88231', host: 'haru-deliv.kr/t/88231', score: 52,
+    reasons: ['처음 보는 쇼핑몰 주소입니다. 개인정보나 카드 번호 입력에 주의하세요.'] },
+  { id: 'blog', verdict: 'safe', from: '김민지', time: '오후 5:48', title: '지인이 보낸 블로그 (단축 주소 → 안전)',
+    text: '어제 말한 맛집 여기야',
+    display: 'https://naver.me/xK2fLp', defanged: 'hxxps://naver[.]me/xK2fLp', host: 'blog.naver.com/haru_eats/2231', score: 6,
+    reasons: ['단축 주소를 풀어 확인한 실제 주소: blog.naver[.]com'] },
+];
+const INIT = [
+  { verdict: 'safe', url: 'hxxps://m.kbstar[.]com/quics', reason: '공식 은행 주소입니다.', time: '어제 오후 7:31', source: '휴대폰에서 확인' },
+  { verdict: 'danger', url: 'hxxp://nts-refund-check[.]xyz', reason: '국세청을 흉내 낸 주소이며, 알려진 피싱 목록에 있습니다.', time: '어제 오후 2:10', source: '피싱 목록' },
+  { verdict: 'caution', url: 'hxxps://event-giftbox[.]shop/p/12', reason: '처음 보는 주소이며 경품 당첨을 내세웁니다.', time: '11월 2일', source: 'AI 판단' },
+];
+const SRC = { danger: 'AI 판단', caution: 'AI 판단', safe: 'AI 판단', official: '휴대폰에서 확인', unknown: '목적지 확인 실패' };
+const STEPS = ['단축 주소 풀기', '알려진 피싱 목록 확인', 'AI 위험 점수 계산'];
+
+class Component extends DCLogic {
+  state = { screen: this.props.startScreen ?? 'onboard', ov: this.props.startOverlay || null, cur: this.props.startOverlay === 'unknown' ? LINKS[1] : null, step: 0, protect: true, history: INIT, filter: 'all', showAfter: false, toast: null, banner: null, host: '' };
+  timers = [];
+  componentWillUnmount() { this.clear(); }
+  clear() { this.timers.forEach(clearTimeout); this.timers = []; }
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
+  toast(text, dot) { this.setState({ toast: { text, dot } }); this.later(() => this.setState({ toast: null }), 2600); }
+  log(l, verdict) {
+    const now = new Date(); const t = `오늘 ${now.getHours() < 12 ? '오전' : '오후'} ${((now.getHours() + 11) % 12) + 1}:${String(now.getMinutes()).padStart(2, '0')}`;
+    this.setState(s => ({ history: [{ verdict, url: l.defanged, reason: l.reasons[0], time: t, source: SRC[verdict] }, ...s.history].slice(0, 50) }));
+  }
+  open(l, banner) { this.setState({ screen: 'browser', ov: null, host: l.host, banner: banner || null }); }
+  tap(l) {
+    this.clear();
+    if (!this.state.protect) { this.open(l, null); return; }
+    if (l.verdict === 'official') { this.log(l, 'official'); this.open(l); this.toast('공식 기관 주소입니다. 바로 열었어요.', '#7FA2FF'); return; }
+    const d = Math.max(300, (this.props.checkDelay ?? 1800) / 3);
+    this.setState({ ov: 'checking', cur: l, step: 0, showAfter: false, screen: this.state.screen === 'browser' ? 'sms' : this.state.screen });
+    [1, 2, 3].forEach(i => this.later(() => this.setState({ step: i }), d * i));
+    this.later(() => this.result(l), d * 3 + 250);
+  }
+  result(l) {
+    this.log(l, l.verdict);
+    if (l.verdict === 'safe') { this.open(l); this.toast('안전한 링크입니다. Chrome으로 열었어요.', '#32D583'); }
+    else if (l.verdict === 'caution') this.open(l, { title: '주의가 필요한 주소입니다', text: l.reasons[0], fg: '#B54708', bg: '#FFF8EB', border: '#FEDF89' });
+    else this.setState({ ov: l.verdict });
+  }
+  renderVals() {
+    const s = this.state, cur = s.cur || LINKS[0];
+    const go = screen => () => { this.clear(); this.setState({ screen, ov: null, toast: null }); };
+    const hist = s.history.map(h => ({ ...h, ...V[h.verdict] }));
+    const fmap = { all: null, danger: ['danger'], caution: ['caution', 'unknown'], safe: ['safe', 'official'] };
+    const list = fmap[s.filter] ? hist.filter(h => fmap[s.filter].includes(h.verdict)) : hist;
+    const tabs = [['home', '홈'], ['history', '검사 기록'], ['help', '도움말']];
+    return {
+      showPanel: !this.props.hidePanel,
+      isOnboard: s.screen === 'onboard', isHome: s.screen === 'home', isHistory: s.screen === 'history', isHelp: s.screen === 'help',
+      isSms: s.screen === 'sms', isBrowser: s.screen === 'browser',
+      showNav: ['home', 'history', 'help'].includes(s.screen),
+      ovRole: s.ov === 'role', ovChecking: s.ov === 'checking', ovDanger: s.ov === 'danger', ovUnknown: s.ov === 'unknown',
+      goOnboard: () => { this.clear(); this.setState({ screen: 'onboard', ov: null, toast: null }); },
+      goHome: go('home'), goSms: go('sms'), goHistory: go('history'),
+      openRole: () => this.setState({ ov: 'role' }),
+      closeOv: () => this.setState({ ov: null }),
+      confirmRole: () => { this.setState({ ov: null, protect: true, screen: 'home' }); this.toast('보호를 켰어요. 링크는 Chrome으로 엽니다.', '#32D583'); },
+      protect: s.protect, protectOff: !s.protect,
+      toggleProtect: () => this.setState(x => ({ protect: !x.protect })),
+      toggleBg: s.protect ? '#1F4FD8' : '#D0D5DD', toggleJustify: s.protect ? 'flex-end' : 'flex-start',
+      statTotal: s.history.length, statDanger: s.history.filter(h => h.verdict === 'danger').length,
+      recent: hist.slice(0, 3), historyList: list, historyEmpty: list.length === 0,
+      filters: [['all', '전체'], ['danger', '위험'], ['caution', '주의'], ['safe', '안전']].map(([k, name]) => {
+        const on = s.filter === k;
+        return { name, pick: () => this.setState({ filter: k }), bg: on ? '#0F1B33' : '#fff', fg: on ? '#fff' : '#344054', border: on ? '#0F1B33' : '#D0D5DD' };
+      }),
+      navItems: tabs.map(([k, name]) => ({ name, go: go(k), color: s.screen === k ? '#1F4FD8' : '#667085', bar: s.screen === k ? '#1F4FD8' : 'transparent' })),
+      smsList: LINKS.map(l => ({ ...l, tap: () => this.tap(l) })),
+      demoLinks: LINKS.map(l => ({ ...V[l.verdict], title: l.title, tap: () => this.tap(l) })),
+      cur: { ...cur, scorePct: (cur.score || 0) + '%' },
+      checkSteps: STEPS.map((name, i) => {
+        const done = s.step > i, active = s.step === i;
+        return { name, mark: done ? '✓' : String(i + 1), dotBg: done ? '#1F4FD8' : active ? '#98A2B3' : '#E4E7EC', fg: done || active ? '#0F1B33' : '#98A2B3', weight: active ? 700 : 500 };
+      }),
+      showAfter: s.showAfter, afterArrow: s.showAfter ? '−' : '+',
+      toggleAfter: () => this.setState(x => ({ showAfter: !x.showAfter })),
+      closeDanger: () => { this.setState({ ov: null, screen: 'sms' }); this.toast('링크를 열지 않았어요.', '#32D583'); },
+      forceOpen: () => this.open(cur, cur.verdict === 'danger'
+        ? { title: '위험한 링크를 열었습니다', text: '아무것도 입력하거나 설치하지 마세요.', fg: '#C4320A', bg: '#FEF3F2', border: '#FECDCA' }
+        : { title: '확인하지 못한 링크입니다', text: '개인정보 입력에 주의하세요.', fg: '#344054', bg: '#F2F4F7', border: '#D0D5DD' }),
+      retry: () => this.tap(cur),
+      browserHost: s.host, browserBanner: !!s.banner,
+      bannerTitle: s.banner?.title, bannerText: s.banner?.text, bannerFg: s.banner?.fg, bannerBg: s.banner?.bg, bannerBorder: s.banner?.border,
+      hasToast: !!s.toast, toastText: s.toast?.text, toastDot: s.toast?.dot,
+    };
+  }
+}
+</script>
+</body>
+</html>
