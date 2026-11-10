@@ -27,10 +27,12 @@ class DemoSmsActivity : Activity() {
                            val url: String, val time: String)
 
     private val messages = listOf(
+        Sms("02-3150-88xx", "0", 0xFFFEE4E2.toInt(), "[교통민원24] 미납 과태료 고지서가 발송되었습니다. 조회:",
+            "http://bit.ly/3xQw9Kd", "오전 8:03"),
         Sms("#Web발신 070-4512-38xx", "#", 0xFFE4E7EC.toInt(), "[CJ대한통운] 고객님 택배가 주소지 불일치로 보관 중입니다. 주소 확인:",
             "http://cj-1ogistics-demo.top/addr", "오전 9:12"),
         Sms("010-2931-55xx", "0", 0xFFFDE2C8.toInt(), "저희 두 사람 결혼합니다. 모바일 청첩장 보기",
-            "http://bit.ly/3xQw9Kd", "오전 10:40"),
+            "https://t.ly/Wd9kQ2", "오전 10:40"),
         Sms("국민건강보험", "국", 0xFFD1E9FF.toInt(), "[국민건강보험] 올해 건강검진 대상자입니다. 검진기관 찾기",
             "https://www.nhis.or.kr", "오후 1:05"),
         Sms("하루마켓", "하", 0xFFD3F8DF.toInt(), "[하루마켓] 주문하신 상품이 출발했습니다. 배송 조회",

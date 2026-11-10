@@ -22,6 +22,7 @@ class TraceResult:
     chain: list[str] = field(default_factory=list)  # 지나온 주소(처음 포함, 최종 포함)
     status: str = 'ok'  # ok | timeout | blocked | error | too_many
     detail: str = ''
+    http_status: int | None = None  # 마지막 주소의 응답 코드(더 이동하지 않을 때). 404·410 = 없는 주소
 
     @property
     def hops(self) -> int:
@@ -63,8 +64,9 @@ async def trace(url: str, budget: float = 1.5, client: httpx.AsyncClient | None 
             if not await asyncio.wait_for(check_ip(p.hostname, port), timeout=left):
                 res.status, res.detail = 'blocked', '내부망 주소'
                 return res
-            loc = await asyncio.wait_for(_location(client, cur), timeout=max(0.05, deadline - time.monotonic()))
+            loc, code = await asyncio.wait_for(_location(client, cur), timeout=max(0.05, deadline - time.monotonic()))
             if loc is None:
+                res.http_status = code
                 return res  # 더 이동하지 않음 → 지금 주소가 최종
             nxt = normalize(urljoin(cur, loc))
             if nxt in res.chain:
@@ -84,13 +86,14 @@ async def trace(url: str, budget: float = 1.5, client: httpx.AsyncClient | None 
             await client.aclose()
 
 
-async def _location(client: httpx.AsyncClient, url: str) -> str | None:
-    """HEAD로 물어보고, 서버가 HEAD를 거부하면 GET을 보내되 본문은 읽지 않고 바로 닫는다."""
+async def _location(client: httpx.AsyncClient, url: str) -> tuple[str | None, int]:
+    """(이동할 주소, 응답 코드). HEAD로 물어보고, 서버가 HEAD를 거부하면 GET을 보내되 본문은 읽지 않고 바로 닫는다."""
     r = await client.head(url)
     if r.status_code in REDIRECT_CODES:
-        return r.headers.get('location')
+        return r.headers.get('location'), r.status_code
     if r.status_code in (403, 405, 400, 501):
         async with client.stream('GET', url) as s:  # 헤더만 확인, 본문 미수신
             if s.status_code in REDIRECT_CODES:
-                return s.headers.get('location')
-    return None
+                return s.headers.get('location'), s.status_code
+            return None, s.status_code
+    return None, r.status_code

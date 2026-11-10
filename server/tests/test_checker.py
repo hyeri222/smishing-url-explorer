@@ -229,3 +229,22 @@ def test_short_url_partial_trace_uses_known_destination():
     r = run(c, 'https://bit.ly/youtube')
     assert r['verdict'] == 'safe' and r['final_url'].startswith('https://m.youtube.com')
     assert any(x['code'] == 'trace_partial' for x in r['reasons'])
+
+
+def test_deleted_short_url_is_caution():
+    tr = TraceResult(final_url='http://bit.ly/3xQw9Kd', chain=['http://bit.ly/3xQw9Kd'], http_status=404)
+    r = run(C(make_lists(), FakeScorer(0.01), trace_fn=fake_trace(tr)), 'bit.ly/3xQw9Kd')
+    assert (r['verdict'], r['source']) == ('caution', 'trace_not_found')
+
+
+def test_shortener_block_page_is_danger():
+    tr = TraceResult(final_url='https://bitly.com/a/warning?hash=abc',
+                     chain=['http://bit.ly/abc', 'https://bitly.com/a/warning?hash=abc'])
+    r = run(C(make_lists(), FakeScorer(0.01), trace_fn=fake_trace(tr)), 'bit.ly/abc')
+    assert (r['verdict'], r['source']) == ('danger', 'shortener_blocked')
+
+
+def test_short_url_without_redirect_still_unknown():
+    tr = TraceResult(final_url='https://is.gd/zzzz', chain=['https://is.gd/zzzz'], http_status=200)
+    r = run(C(make_lists(), FakeScorer(0.01), trace_fn=fake_trace(tr)), 'is.gd/zzzz')
+    assert r['verdict'] == 'unknown'

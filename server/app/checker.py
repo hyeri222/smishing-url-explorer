@@ -56,6 +56,17 @@ def domain_reasons(info: DomainInfo) -> list[rules.Reason]:
     return []
 
 
+def is_shortener_block_page(url: str) -> bool:
+    """단축 서비스의 '위험 링크 차단' 경고 페이지인지 (bit.ly는 신고된 링크를 bitly.com/a/warning 등으로 보낸다)"""
+    from urllib.parse import urlsplit
+    p = urlsplit(url)
+    return (p.hostname or '') in ('bitly.com', 'www.bitly.com', 'bit.ly') and         p.path.startswith(('/a/warning', '/a/blocked'))
+
+
+def _no_short(reasons):
+    return [r for r in reasons if r.code != 'shortener']
+
+
 def _fallback_score(reasons: list[rules.Reason]) -> int:
     """모델이 없을 때(개발용)만 쓰는 임시 점수."""
     w = {'danger': 40, 'warn': 15, 'info': 5}
@@ -110,6 +121,14 @@ class Checker:
             t = await self.trace(url)
             base.update(final_url=t.final_url, chain=t.chain)
             hops = t.hops
+            if is_shortener_block_page(t.final_url):
+                # 단축 서비스가 이 링크를 위험하다고 막고 경고 페이지로 보냄(bit.ly 경고 페이지 등)
+                return self._out(base, 'danger', 90, 'shortener_blocked', _no_short(rules.find_reasons(url)),
+                                 extra=rules.Reason('shortener_blocked', '단축 주소 서비스가 위험 링크로 차단한 주소', 'danger'))
+            if rules.is_shortener(host_of(t.final_url)) and t.http_status in (404, 410):
+                # 단축 서비스가 '그런 주소 없음'이라고 답함: 신고돼서 지워졌거나 가짜 주소
+                return self._out(base, 'caution', 50, 'trace_not_found', _no_short(rules.find_reasons(url)),
+                                 extra=rules.Reason('short_not_found', '삭제됐거나 없는 단축 주소 — 신고돼서 지워졌을 수 있음', 'warn'))
             if rules.is_shortener(host_of(t.final_url)):
                 # 단축 주소 서비스를 벗어나지 못함 → 목적지를 모름
                 why = t.status if t.status != 'ok' else 'unresolved'

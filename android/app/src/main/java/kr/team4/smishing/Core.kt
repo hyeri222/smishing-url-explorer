@@ -207,6 +207,8 @@ object History {
 fun sourceLabel(source: String, verdict: Verdict): String = when {
     source == "blacklist" -> "피싱 목록"
     source == "whitelist" -> "공식 주소"
+    source == "trace_not_found" -> "삭제된 단축 주소"
+    source == "shortener_blocked" -> "단축 서비스 차단"
     source.startsWith("trace") -> "목적지 확인 실패"
     source == "canine" -> "AI 판단"
     source == "canine+rules" -> "AI + 규칙"

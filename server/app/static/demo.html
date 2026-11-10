@@ -246,11 +246,12 @@ const msgs = [
   {from:'김민지', av:'김', bg:'#EBE9FE', text:'어제 말한 옷 여기서 샀어', url:'https://www.musinsa.com/products/123456', time:'오후 5:48'},
   {from:'하루마켓', av:'하', bg:'#D3F8DF', text:'[하루마켓] 주문하신 상품이 출발했습니다. 배송 조회', url:'https://haru-deliv.kr/t/88231', time:'오후 3:22'},
   {from:'국민건강보험', av:'국', bg:'#D1E9FF', text:'[국민건강보험] 올해 건강검진 대상자입니다. 검진기관 찾기', url:'https://www.nhis.or.kr', time:'오후 1:05'},
-  {from:'010-2931-55xx', av:'0', bg:'#FDE2C8', text:'저희 두 사람 결혼합니다. 모바일 청첩장 보기', url:'http://bit.ly/3xQw9Kd', time:'오전 10:40'},
+  {from:'010-2931-55xx', av:'0', bg:'#FDE2C8', text:'저희 두 사람 결혼합니다. 모바일 청첩장 보기', url:'https://t.ly/Wd9kQ2', time:'오전 10:40'},
   {from:'#Web발신 070-4512-38xx', av:'#', bg:'#E4E7EC', text:'[CJ대한통운] 고객님 택배가 주소지 불일치로 보관 중입니다. 주소 확인:', url:'http://cj-1ogistics-demo.top/addr', time:'오전 9:12'},
+  {from:'02-3150-88xx', av:'0', bg:'#FEE4E2', text:'[교통민원24] 미납 과태료 고지서가 발송되었습니다. 조회:', url:'http://bit.ly/3xQw9Kd', time:'오전 8:03'},
 ].map(m => ({...m, unread:true}));
 
-const OFFICIAL_LABEL = {blacklist:'피싱 목록', whitelist:'공식 주소', canine:'AI 판단', 'canine+rules':'AI + 규칙', rules_fallback:'임시 규칙'};
+const OFFICIAL_LABEL = {trace_not_found:'삭제된 단축 주소', shortener_blocked:'단축 서비스 차단', blacklist:'피싱 목록', whitelist:'공식 주소', canine:'AI 판단', 'canine+rules':'AI + 규칙', rules_fallback:'임시 규칙'};
 const V = {
   danger:{label:'위험', bg:'#FEF0EF', fg:'#C4320A'}, caution:{label:'주의', bg:'#FFF4E0', fg:'#B54708'},
   safe:{label:'안전', bg:'#ECFDF3', fg:'#067647'}, official:{label:'공식', bg:'#EAF0FF', fg:'#1F4FD8'},
@@ -415,7 +416,7 @@ function showResult(url, r){
   if (r && r.source === 'whitelist') v = 'official';
   const reasons = r ? r.reasons.map(x => x.text) : [];
   const reason = !r ? '검사 서버가 응답하지 않았습니다.' : reasons[0] || `AI 위험 점수 ${r.score ?? 0}점 · 특이한 점이 없습니다.`;
-  state.history.unshift({url, v, time:now(), source: !r ? '서버 응답 없음' : (r.source.startsWith('trace') ? '목적지 확인 실패' : (OFFICIAL_LABEL[r.source] || r.source)), reason});
+  state.history.unshift({url, v, time:now(), source: !r ? '서버 응답 없음' : (OFFICIAL_LABEL[r.source] || (r.source.startsWith('trace') ? '목적지 확인 실패' : r.source)), reason});
   state.history = state.history.slice(0, 50);
   state.total++; if (v === 'danger') state.blocked++;
 
