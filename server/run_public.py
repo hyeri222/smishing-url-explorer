@@ -47,11 +47,41 @@ def main():
         else:
             sys.exit('검사 서버가 켜지지 않았습니다.')
 
+    try:
+        while True:  # 무료 터널은 가끔 끊긴다 → 1분마다 확인해서 끊기면 새로 열고 주소를 다시 기록
+            tunnel, url = open_tunnel()
+            fails = 0
+            while tunnel.poll() is None and fails < 3:
+                time.sleep(60)
+                fails = 0 if alive(url) else fails + 1
+            print('터널이 끊겨 다시 엽니다...')
+            tunnel.terminate()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        for p in procs:
+            p.terminate()
+        if tunnel_box:
+            tunnel_box[0].terminate()
+
+
+tunnel_box = []
+
+
+def alive(url: str) -> bool:
+    try:
+        with urllib.request.urlopen(url + '/health', timeout=10) as r:
+            return r.status == 200
+    except Exception:
+        return False
+
+
+def open_tunnel():
     print('터널을 여는 중...')
     tunnel = subprocess.Popen([CLOUDFLARED, 'tunnel', '--no-autoupdate', '--url', f'http://127.0.0.1:{PORT}'],
                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8',
                               errors='replace')
-    procs.append(tunnel)
+    tunnel_box[:] = [tunnel]
     url = None
     for line in tunnel.stdout:
         m = re.search(r'https://[a-z0-9-]+\.trycloudflare\.com', line)
@@ -60,30 +90,22 @@ def main():
             break
     if not url:
         sys.exit('터널 주소를 받지 못했습니다.')
-
-    # 터널이 실제로 연결될 때까지 잠깐 기다린 뒤 주소를 공개
-    for _ in range(30):
-        try:
-            with urllib.request.urlopen(url + '/health', timeout=5) as r:
-                if r.status == 200:
-                    break
-        except Exception:
-            time.sleep(2)
+    # 터널 로그는 계속 읽어서 버린다(안 읽으면 터널이 멈춤)
+    import threading
+    threading.Thread(target=lambda: [None for _ in tunnel.stdout], daemon=True).start()
+    for _ in range(30):  # 실제로 연결될 때까지 기다린 뒤 주소를 공개
+        if alive(url):
+            break
+        time.sleep(2)
     HfApi().upload_file(path_or_fileobj=url.encode(), path_in_repo='endpoint.txt', repo_id=MODEL_REPO,
                         commit_message='시연 서버 주소 갱신')
     print('\n' + '=' * 60)
-    print(' 인터넷 주소:', url)
+    print(' 인터넷 주소:', url, '  (' + time.strftime('%H:%M') + ')')
     print(' 앱이 읽는 곳: https://huggingface.co/' + MODEL_REPO + '/resolve/main/endpoint.txt')
-    print(' 이 창을 닫거나 Ctrl+C를 누르면 서버가 꺼집니다.')
+    print(' 웹 데모: https://6hzl-kok-demo.static.hf.space')
+    print(' 터널이 끊기면 자동으로 다시 엽니다. 끄려면 Ctrl+C')
     print('=' * 60 + '\n')
-    try:
-        for _ in tunnel.stdout:  # 터널 로그는 버린다(계속 읽어야 멈추지 않음)
-            pass
-    except KeyboardInterrupt:
-        pass
-    finally:
-        for p in procs:
-            p.terminate()
+    return tunnel, url
 
 
 if __name__ == '__main__':
