@@ -218,3 +218,14 @@ def test_popular_domain_skips_lookup():
         return DomainInfo(exists=False)
     c = Checker(make_lists(popular={'yes24.com'}), FakeScorer(0.01), domain_fn=d)
     assert run(c, 'https://www.yes24.com/a')['verdict'] == 'safe' and not called
+
+
+def test_short_url_partial_trace_uses_known_destination():
+    # 목적지(youtube)까지 찾은 뒤 그 사이트의 추가 이동에서 시간이 넘은 경우 → 알아낸 목적지로 판정
+    tr = TraceResult(final_url='https://m.youtube.com/watch?v=x',
+                     chain=['https://bit.ly/youtube', 'http://www.youtube.com/watch?v=x', 'https://m.youtube.com/watch?v=x'],
+                     status='timeout')
+    c = C(make_lists(), FakeScorer(0.01), trace_fn=fake_trace(tr))
+    r = run(c, 'https://bit.ly/youtube')
+    assert r['verdict'] == 'safe' and r['final_url'].startswith('https://m.youtube.com')
+    assert any(x['code'] == 'trace_partial' for x in r['reasons'])

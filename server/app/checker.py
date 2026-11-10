@@ -105,15 +105,18 @@ class Checker:
             return self._phish(base, rules.find_reasons(url))
 
         # 3) 단축 URL이면 최종 주소까지 따라감
-        hops = 0
+        hops, partial = 0, False
         if short:
             t = await self.trace(url)
             base.update(final_url=t.final_url, chain=t.chain)
             hops = t.hops
-            if t.status != 'ok' or rules.is_shortener(host_of(t.final_url)):
+            if rules.is_shortener(host_of(t.final_url)):
+                # 단축 주소 서비스를 벗어나지 못함 → 목적지를 모름
                 why = t.status if t.status != 'ok' else 'unresolved'
                 return self._out(base, 'unknown', None, f'trace_{why}', rules.find_reasons(url),
                                  extra=rules.Reason('unresolved', '실제 목적지를 확인하지 못함 — 누르지 마세요', 'danger'))
+            # 목적지 사이트가 한 번 더 넘기다 시간이 넘었어도, 단축 주소 밖의 목적지를 알았으면 그 주소로 판정한다
+            partial = t.status != 'ok'
             final = base['final_url']
             if self.lists.is_official(final):
                 return self._official(base)
@@ -122,6 +125,8 @@ class Checker:
 
         final = base['final_url']
         reasons = rules.find_reasons(final, hops)
+        if short and partial:
+            reasons.append(rules.Reason('trace_partial', '목적지 사이트까지만 확인함 (그 뒤 이동은 확인하지 못함)', 'info'))
 
         # 4) CANINE 점수 + 주소 정보(있는지·며칠 됐는지) + 규칙 보정. 모델 계산과 주소 조회를 동시에 한다
         host = host_of(final)
