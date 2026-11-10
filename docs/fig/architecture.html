@@ -1,56 +1,85 @@
-<html><head><meta charset="utf-8"><style>body{margin:0;background:#fff}</style></head><body>
-<svg width="1000" height="600" xmlns="http://www.w3.org/2000/svg" font-family="Malgun Gothic, sans-serif">
-<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#475569"/></marker>
-<marker id="o" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#c2410c"/></marker></defs>
-<style>.bx{fill:#fff;stroke:#334155;stroke-width:2}.t{font-size:15px;font-weight:700;fill:#111827;text-anchor:middle}.d{font-size:12.5px;fill:#374151;text-anchor:middle}.ln{stroke:#475569;stroke-width:2;fill:none}.lb{font-size:12px;fill:#475569}.opt{stroke-dasharray:6 4}</style>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>body{margin:0;background:#fff}</style></head><body>
+<svg width="1000" height="680" xmlns="http://www.w3.org/2000/svg" font-family="Pretendard, Malgun Gothic, sans-serif">
+<defs>
+<marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#475467"/></marker>
+<marker id="o" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#C4320A"/></marker>
+<marker id="b" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#1F4FD8"/></marker>
+</defs>
+<style>
+.bx{fill:#fff;stroke:#344054;stroke-width:1.6}
+.t{font-size:14.5px;font-weight:700;fill:#0F1B33;text-anchor:middle}
+.d{font-size:12px;fill:#475467;text-anchor:middle}
+.ln{stroke:#475467;stroke-width:1.8;fill:none}
+.lb{font-size:11.5px;fill:#475467}
+.zone{font-size:13px;font-weight:700}
+</style>
 
-<!-- phone zone -->
-<rect x="15" y="20" width="250" height="420" rx="16" fill="#eef2f7" stroke="#1B2A4A" stroke-width="2"/>
-<text x="30" y="44" font-size="13" font-weight="700" fill="#1B2A4A">사용자 휴대폰 (안드로이드)</text>
-<rect class="bx" x="40" y="60" width="200" height="56" rx="10"/><text class="t" x="140" y="85">문자 앱</text><text class="d" x="140" y="105">링크 터치</text>
-<rect x="40" y="150" width="200" height="150" rx="10" fill="#1B2A4A"/>
-<text class="t" x="140" y="176" style="fill:#fff">스미싱 URL 탐색기 앱</text>
-<text class="d" x="140" y="198" style="fill:#e5e7eb">기본 브라우저 역할로 링크 수신</text>
-<text class="d" x="140" y="220" style="fill:#e5e7eb">① 공식 도메인 → 바로 열기</text>
-<text class="d" x="140" y="242" style="fill:#e5e7eb">그 외 → 서버에 검사 요청</text>
-<text class="d" x="140" y="264" style="fill:#e5e7eb">안전 열기 · 주의 안내</text>
-<text class="d" x="140" y="286" style="fill:#e5e7eb">위험·확인 못 함 → 경고창</text>
-<rect class="bx" x="40" y="335" width="200" height="56" rx="10"/><text class="t" x="140" y="360">실제 브라우저</text><text class="d" x="140" y="380">크롬·삼성 인터넷</text>
-<line class="ln" x1="140" y1="116" x2="140" y2="146" marker-end="url(#a)"/>
-<line class="ln" x1="140" y1="300" x2="140" y2="331" marker-end="url(#a)"/><text class="lb" x="148" y="322">안전·주의</text>
+<!-- ===== 휴대폰 ===== -->
+<rect x="12" y="16" width="262" height="452" rx="18" fill="#EEF2F8" stroke="#0F1B33" stroke-width="1.8"/>
+<text class="zone" x="28" y="40" fill="#0F1B33">사용자 휴대폰 (안드로이드)</text>
+<rect class="bx" x="38" y="54" width="210" height="50" rx="10"/><text class="t" x="143" y="76">메시지 앱</text><text class="d" x="143" y="94">문자 속 링크 터치</text>
+<rect x="38" y="130" width="210" height="150" rx="12" fill="#1F4FD8"/>
+<text class="t" x="143" y="156" style="fill:#fff">KoK 앱</text>
+<text class="d" x="143" y="178" style="fill:#DCE6FF">기본 브라우저 역할로 링크를 먼저 받음</text>
+<text class="d" x="143" y="202" style="fill:#fff">① 공식 주소 → 휴대폰 안에서 바로 통과</text>
+<text class="d" x="143" y="224" style="fill:#fff">그 외 → 주소만 서버로 보내 검사</text>
+<text class="d" x="143" y="248" style="fill:#DCE6FF">안전 → 열기 · 주의 → 확인 창</text>
+<text class="d" x="143" y="268" style="fill:#DCE6FF">위험 · 확인 못 함 → 경고 화면</text>
+<rect class="bx" x="38" y="306" width="210" height="50" rx="10"/><text class="t" x="143" y="328">실제 브라우저</text><text class="d" x="143" y="346">크롬 · 삼성 인터넷</text>
+<line class="ln" x1="143" y1="104" x2="143" y2="126" marker-end="url(#a)"/>
+<line class="ln" x1="143" y1="280" x2="143" y2="302" marker-end="url(#a)"/><text class="lb" x="152" y="296">열기로 정한 경우</text>
+<rect x="38" y="382" width="210" height="68" rx="10" fill="#fff" stroke="#1F4FD8" stroke-width="1.6" stroke-dasharray="6 4"/>
+<text class="t" x="143" y="406">웹 데모 (설치 없이 체험)</text><text class="d" x="143" y="424">화면 속 휴대폰 · 같은 서버로 검사</text><text class="d" x="143" y="440">6hzl-kok-demo.static.hf.space</text>
 
-<!-- server zone -->
-<rect x="300" y="20" width="685" height="300" rx="16" fill="#f8fafc" stroke="#64748b" stroke-width="2" stroke-dasharray="7 5"/>
-<text x="315" y="44" font-size="13" font-weight="700" fill="#334155">검사 서버 · FastAPI + Docker (Hugging Face Spaces 무료 CPU)</text>
-<rect class="bx" x="320" y="60" width="150" height="92" rx="10"/><text class="t" x="395" y="88">API 서버</text><text class="d" x="395" y="110">/api/check</text><text class="d" x="395" y="130">정규화·결과 조합</text>
-<rect class="bx" x="490" y="60" width="150" height="92" rx="10"/><text class="t" x="565" y="88">② 단축 URL 풀기</text><text class="d" x="565" y="110">헤더만 확인(본문 X)</text><text class="d" x="565" y="130">최대 5회 · 1.5초</text>
-<rect class="bx" x="660" y="60" width="150" height="92" rx="10"/><text class="t" x="735" y="88">③ 피싱 목록</text><text class="d" x="735" y="110">KISA·PhishTank</text><text class="d" x="735" y="130">있으면 즉시 "위험"</text>
-<rect x="830" y="60" width="140" height="92" rx="10" fill="#fff" stroke="#c2410c" stroke-width="2.5"/><text class="t" x="900" y="88" style="fill:#c2410c">④ CANINE</text><text class="d" x="900" y="110">글자 단위 AI</text><text class="d" x="900" y="130">위험 점수 0~100</text>
-<rect class="bx" x="660" y="200" width="310" height="85" rx="10"/><text class="t" x="815" y="228">⑤ 판정 + 이유(규칙)</text><text class="d" x="815" y="250">0~39 안전 · 40~69 주의 · 70~100 위험</text><text class="d" x="815" y="270">목적지를 못 풀면 "확인 못 함"</text>
-<rect class="bx opt" x="320" y="215" width="150" height="80" rx="10"/><text class="t" x="395" y="243">오판 신고 저장</text><text class="d" x="395" y="265">Supabase (SP3)</text>
-<rect class="bx opt" x="490" y="215" width="150" height="80" rx="10"/><text class="t" x="565" y="243">보조 웹</text><text class="d" x="565" y="265">카카오톡·PC용 (SP3)</text>
-<line class="ln" x1="470" y1="106" x2="486" y2="106" marker-end="url(#a)"/>
-<line class="ln" x1="640" y1="106" x2="656" y2="106" marker-end="url(#a)"/>
-<line class="ln" x1="810" y1="106" x2="826" y2="106" marker-end="url(#a)"/>
-<line class="ln" x1="900" y1="152" x2="900" y2="196" marker-end="url(#a)"/>
-<path class="ln" d="M735,152 V196" marker-end="url(#a)"/>
-<path class="ln" d="M660,215 H650 V180 H395 V156" marker-end="url(#a)"/>
-<line class="ln opt" x1="565" y1="215" x2="430" y2="156" marker-end="url(#a)"/>
+<!-- ===== 검사 서버 ===== -->
+<rect x="296" y="16" width="692" height="300" rx="18" fill="#F8FAFC" stroke="#667085" stroke-width="1.6" stroke-dasharray="7 5"/>
+<text class="zone" x="312" y="40" fill="#344054">검사 서버 · Python FastAPI  (노트북 + Cloudflare 무료 터널로 인터넷 연결)</text>
+<rect class="bx" x="312" y="56" width="150" height="96" rx="10"/><text class="t" x="387" y="82">② 공식 주소</text><text class="d" x="387" y="104">/api/check · 주소 정리</text><text class="d" x="387" y="122">.go.kr·은행·택배사</text><text class="d" x="387" y="140">→ 안전</text>
+<rect class="bx" x="480" y="56" width="150" height="96" rx="10"/><text class="t" x="555" y="82">③ 피싱 목록</text><text class="d" x="555" y="104">KISA · PhishTank</text><text class="d" x="555" y="122">약 9만 5천 개</text><text class="d" x="555" y="140">있으면 → 위험</text>
+<rect class="bx" x="648" y="56" width="150" height="96" rx="10"/><text class="t" x="723" y="82">④ 단축 URL 풀기</text><text class="d" x="723" y="104">응답 헤더만 따라감</text><text class="d" x="723" y="122">(페이지 열지 않음)</text><text class="d" x="723" y="140">최대 5회 · 1.5초</text>
+<rect x="816" y="56" width="156" height="96" rx="10" fill="#fff" stroke="#C4320A" stroke-width="2.4"/><text class="t" x="894" y="82" style="fill:#C4320A">⑤ CANINE v2</text><text class="d" x="894" y="104">글자 단위 AI</text><text class="d" x="894" y="122">직접 미세조정한 모델</text><text class="d" x="894" y="140">피싱 확률 → 0~100점</text>
+<line class="ln" x1="462" y1="104" x2="476" y2="104" marker-end="url(#a)"/>
+<line class="ln" x1="630" y1="104" x2="644" y2="104" marker-end="url(#a)"/>
+<line class="ln" x1="798" y1="104" x2="812" y2="104" marker-end="url(#a)"/>
 
-<!-- app <-> server -->
-<path class="ln" d="M240,175 H290 V95 H316" marker-end="url(#a)"/><text class="lb" x="246" y="168">URL</text>
-<path class="ln" d="M320,135 H302 V255 H244" marker-end="url(#a)"/><text class="lb" x="248" y="276">판정·이유</text>
+<rect class="bx" x="648" y="176" width="150" height="72" rx="10"/><text class="t" x="723" y="198">목적지를 모를 때</text><text class="d" x="723" y="218" style="font-size:11px">삭제됨→주의 · 차단됨→위험</text><text class="d" x="723" y="236">그 외 → 확인 못 함</text>
+<line class="ln" x1="723" y1="152" x2="723" y2="172" marker-end="url(#a)"/>
 
-<!-- training zone -->
-<rect x="15" y="470" width="970" height="115" rx="16" fill="#fff7ed" stroke="#ea580c" stroke-width="2" stroke-dasharray="7 5"/>
-<text x="30" y="494" font-size="13" font-weight="700" fill="#c2410c">AI 학습 (오프라인 · Google Colab GPU 또는 팀 PC CPU)</text>
-<rect class="bx" x="40" y="505" width="230" height="66" rx="10"/><text class="t" x="155" y="530">피싱 데이터</text><text class="d" x="155" y="552">KISA 2023·2024 + PhishTank</text>
-<rect class="bx" x="290" y="505" width="230" height="66" rx="10"/><text class="t" x="405" y="530">정상 데이터</text><text class="d" x="405" y="552">Tranco·Common Crawl·위키백과</text>
-<rect class="bx" x="540" y="505" width="200" height="66" rx="10"/><text class="t" x="640" y="530">정제·날짜 분할</text><text class="d" x="640" y="552">단축 URL 제외·피싱 목록</text>
-<rect x="760" y="505" width="210" height="66" rx="10" fill="#fff" stroke="#c2410c" stroke-width="2.5"/><text class="t" x="865" y="530">CANINE 미세조정</text><text class="d" x="865" y="552">→ Hugging Face Hub</text>
-<line class="ln" x1="270" y1="538" x2="286" y2="538" marker-end="url(#a)"/>
-<line class="ln" x1="520" y1="538" x2="536" y2="538" marker-end="url(#a)"/>
-<line class="ln" x1="740" y1="538" x2="756" y2="538" marker-end="url(#a)"/>
-<path d="M940,505 V156" stroke="#c2410c" stroke-width="2" fill="none" marker-end="url(#o)"/><text x="930" y="455" font-size="12.5" font-weight="700" fill="#c2410c" text-anchor="end">학습된 모델 탑재</text>
+<rect class="bx" x="312" y="176" width="318" height="124" rx="10"/>
+<text class="t" x="471" y="200">⑥ 보정 + 판정</text>
+<text class="d" x="471" y="222">규칙: 브랜드 흉내(1↔l) · 위험한 주소 끝(.top) · 의심 단어</text>
+<text class="d" x="471" y="242">주소 정보: 실제로 있는 주소인지(DNS) · 만든 날짜(RDAP)</text>
+<text class="d" x="471" y="262">유명 사이트(Tranco 상위 10만)는 '주의'까지만</text>
+<text class="d" x="471" y="284" style="font-weight:700;fill:#0F1B33">0~39 안전 · 40~69 주의 · 70~100 위험 + 이유 문장</text>
+<path class="ln" d="M894,152 L894,268 L634,268" marker-end="url(#a)"/>
 
-</svg></body></html>
+<!-- 앱 ↔ 서버 -->
+<path d="M248,215 L280,215 L280,104 L308,104" stroke="#1F4FD8" stroke-width="2" fill="none" marker-end="url(#b)"/>
+<text class="lb" x="252" y="120" style="fill:#1F4FD8">주소</text>
+<path d="M312,250 L270,250 L252,250" stroke="#1F4FD8" stroke-width="2" fill="none" marker-end="url(#b)"/>
+<text class="lb" x="252" y="268" style="fill:#1F4FD8">판정·이유</text>
+<path d="M248,416 L286,416 L286,150 L308,150" stroke="#1F4FD8" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#b)"/>
+
+<!-- ===== 허깅페이스 ===== -->
+<rect x="296" y="334" width="692" height="134" rx="18" fill="#FFF9EB" stroke="#B54708" stroke-width="1.6" stroke-dasharray="7 5"/>
+<text class="zone" x="312" y="358" fill="#B54708">Hugging Face (무료)</text>
+<rect class="bx" x="312" y="372" width="300" height="82" rx="10"/><text class="t" x="462" y="396">모델 저장소 6hzl/kok-canine</text><text class="d" x="462" y="416">학습한 CANINE v2 모델 파일</text><text class="d" x="462" y="436">endpoint.txt: 지금 켜져 있는 서버 주소</text>
+<rect class="bx" x="630" y="372" width="342" height="82" rx="10"/><text class="t" x="801" y="396">정적 페이지 6hzl/kok-demo</text><text class="d" x="801" y="416">웹 데모 화면 (고정 주소, QR 가능)</text><text class="d" x="801" y="436">endpoint.txt를 읽어 서버를 찾아감</text>
+<text class="lb" x="320" y="330" style="fill:#B54708">모델 불러오기 ↑ · 서버 주소 기록 ↓</text>
+
+<!-- ===== 학습 ===== -->
+<rect x="12" y="490" width="976" height="176" rx="18" fill="#FFF4F0" stroke="#C4320A" stroke-width="1.6" stroke-dasharray="7 5"/>
+<text class="zone" x="28" y="514" fill="#C4320A">AI 학습 (오프라인 · Google Colab T4 GPU)</text>
+<rect class="bx" x="32" y="530" width="210" height="116" rx="10"/><text class="t" x="137" y="554">데이터 모으기</text><text class="d" x="137" y="576">피싱: KISA 2023~24 · PhishTank</text><text class="d" x="137" y="596">정상: Tranco · Common Crawl</text><text class="d" x="137" y="616">· 한국어 위키백과</text><text class="d" x="137" y="636">피싱 85,378 : 정상 85,378</text>
+<rect class="bx" x="272" y="530" width="230" height="116" rx="10"/><text class="t" x="387" y="554">전처리 · 나누기</text><text class="d" x="387" y="576">http·www 떼기, 단축 URL 제외</text><text class="d" x="387" y="596">정상·피싱 '모양' 맞추기(1:1, 경로 비율)</text><text class="d" x="387" y="616">날짜 기준: 학습 ~25.12</text><text class="d" x="387" y="636">검증 26.1~4 · 시험 26.5~10</text>
+<rect x="532" y="530" width="230" height="116" rx="10" fill="#fff" stroke="#C4320A" stroke-width="2.4"/><text class="t" x="647" y="554" style="fill:#C4320A">CANINE 미세조정</text><text class="d" x="647" y="576">google/canine-s + 2분류층</text><text class="d" x="647" y="596">lr 2e-5 · batch 32 · 3 epoch</text><text class="d" x="647" y="616">검증 F1 최고 = 2 epoch 선택</text><text class="d" x="647" y="636">기준점 0.05 (오탐률 5% 이하)</text>
+<rect class="bx" x="792" y="530" width="176" height="116" rx="10"/><text class="t" x="880" y="554">시험 결과</text><text class="d" x="880" y="576">2026.5~10 처음 보는 주소</text><text class="d" x="880" y="596">정확도 89.8%</text><text class="d" x="880" y="616">정밀도 98.4% · 재현율 81.0%</text><text class="d" x="880" y="636">오탐률 1.3%</text>
+<line class="ln" x1="242" y1="588" x2="268" y2="588" marker-end="url(#a)"/>
+<line class="ln" x1="502" y1="588" x2="528" y2="588" marker-end="url(#a)"/>
+<line class="ln" x1="762" y1="588" x2="788" y2="588" marker-end="url(#a)"/>
+<path d="M647,530 L647,480 L462,480 L462,458" stroke="#C4320A" stroke-width="2" fill="none" marker-end="url(#o)"/>
+<text class="lb" x="656" y="524" style="fill:#C4320A;font-weight:700">학습한 모델 올리기</text>
+</svg>
+</body></html>

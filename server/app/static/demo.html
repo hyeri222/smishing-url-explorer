@@ -519,6 +519,25 @@ document.getElementById('cSend').addEventListener('click', () => {
 })();
 
 render();
+
+// ---------- 바로 가기: 주소 뒤에 #shot=danger 처럼 붙이면 그 화면을 바로 연다(발표·캡처용) ----------
+// inbox, kok, history, safe, official, caution, deleted, danger, unknown
+(async () => {
+  const shot = new URLSearchParams(location.hash.slice(1)).get('shot');
+  if (!shot) return;
+  const pick = {safe:'musinsa', official:'nhis', caution:'haru-deliv', deleted:'bit.ly/3xQw9Kd', danger:'cj-1ogistics', unknown:'t.ly'};
+  const open = async key => {
+    const i = msgs.findIndex(m => m.url.includes(pick[key]));
+    msgs[i].unread = false; state.thread = i; go('thread');
+    await tapLink(msgs[i].url);
+  };
+  if (shot === 'inbox') go('inbox');
+  else if (shot === 'kok' || shot === 'history') {
+    for (const k of ['unknown', 'official', 'danger', 'caution', 'safe']) { await open(k); closeOverlay(); }
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+    state.kokTab = shot === 'kok' ? 'home' : 'history'; go('kok');
+  } else if (pick[shot]) await open(shot);
+})();
 </script>
 </body>
 </html>
