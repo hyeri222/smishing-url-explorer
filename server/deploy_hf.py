@@ -26,7 +26,7 @@ print('모델:', f'https://huggingface.co/{model_repo}')
 api.create_repo(space_repo, repo_type='space', space_sdk='docker', exist_ok=True)
 api.add_space_variable(space_repo, 'MODEL_ID', model_repo)
 api.upload_folder(repo_id=space_repo, repo_type='space', folder_path=HERE,
-                  allow_patterns=['app/*.py', 'data/*', 'Dockerfile', 'requirements.txt', 'README.md'],
+                  allow_patterns=['app/*.py', 'app/static/*', 'data/*', 'Dockerfile', 'requirements.txt', 'README.md'],
                   commit_message='KoK 검사 서버')
 print('Space:', f'https://huggingface.co/spaces/{space_repo}')
 print('API 주소:', f'https://{user.lower()}-kok-api.hf.space')

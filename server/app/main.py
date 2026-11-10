@@ -1,7 +1,9 @@
 """검사 서버 (FastAPI)."""
 import os
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -16,6 +18,13 @@ app.add_middleware(
     allow_headers=['*'],
 )
 checker = Checker()
+DEMO = Path(__file__).parent / 'static' / 'demo.html'
+
+
+@app.get('/', include_in_schema=False)
+def demo():
+    """웹 데모: 화면 속 휴대폰에서 문자 링크를 눌러 KoK 검사를 체험"""
+    return FileResponse(DEMO, headers={'Cache-Control': 'no-cache'})
 
 
 class CheckIn(BaseModel):
