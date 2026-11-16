@@ -169,20 +169,6 @@ class MainActivity : Activity() {
             c.add(card)
         }
 
-        // 시연용 문자 화면으로
-        val demo = Ui.row(this, 14).apply {
-            background = Ui.ripple(Ui.rounded(context, C.WHITE, 18, C.G200))
-            Ui.pad(this, 18, 16, 18, 16)
-            setOnClickListener { startActivity(Intent(context, DemoSmsActivity::class.java)) }
-        }
-        demo.addView(Ui.iconTile(this, R.drawable.ic_sms, 48, 24, C.BLUE_SOFT, 14))
-        val dt = Ui.col(this, 2)
-        dt.add(Ui.text(this, "문자 앱에서 시험해 보기", 17, C.INK, 700))
-        dt.add(Ui.text(this, "시연용 문자 속 링크를 눌러 보세요", 15, C.G500))
-        demo.add(dt, 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-        demo.addView(Ui.icon(this, R.drawable.ic_l_right, 22, C.G400))
-        c.add(demo)
-
         // 최근 검사
         val recentHead = Ui.row(this)
         recentHead.add(Ui.text(this, "최근 검사", 19, weight = 700), 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)

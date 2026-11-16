@@ -118,11 +118,6 @@ input:focus-visible,textarea:focus-visible{outline:none;border-color:var(--blue)
 .stats b{display:block;font-size:28px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
 .stats span{font-size:14px;color:#DCE6FF}
 .card{background:#fff;border-radius:20px;margin:12px 16px 0;border:1px solid var(--g200)}
-.trial{display:flex;align-items:center;gap:14px;padding:16px 18px;width:calc(100% - 32px);text-align:left}
-.trial .ic{width:48px;height:48px;border-radius:14px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center}
-.trial b{display:block;font-size:17px}.trial span{font-size:15px;color:var(--g500)}
-.trial:hover{background:#FAFBFF}
-.trial .chev{margin-left:auto;color:var(--g400)}
 .sec{display:flex;justify-content:space-between;align-items:baseline;padding:22px 20px 8px}
 .sec b{font-size:19px}.sec span{font-size:14px;color:var(--g500)}
 .rec{display:flex;gap:12px;align-items:center;padding:14px 16px;border-top:1px solid var(--g100)}
@@ -405,8 +400,6 @@ function kok(){
         h('p', {}, '문자 속 링크를 누르면 먼저 검사해요'),
         h('div', {class:'stats'}, h('div', {}, h('b', {}, state.total), h('span', {}, '검사한 링크')),
           h('div', {}, h('b', {}, state.blocked), h('span', {}, '막은 위험 링크')))),
-      h('button', {class:'card trial', onclick:() => go('inbox')}, h('div', {class:'ic'}, icon('message')),
-        h('div', {}, h('b', {}, '문자 앱에서 시험해 보기'), h('span', {}, '시연용 문자 속 링크를 눌러 보세요')), h('span', {class:'chev'}, icon('right'))),
       h('div', {class:'sec'}, h('b', {}, '최근 검사'), state.history.length ? h('span', {}, `${state.history.length}건`) : null),
       records(state.history.slice(0, 4)));
   } else if (state.kokTab === 'history') {

@@ -47,9 +47,5 @@
                 <data android:scheme="https" />
             </intent-filter>
         </activity>
-        <!-- 학술제 시연용 가짜 문자 화면 -->
-        <activity
-            android:name=".DemoSmsActivity"
-            android:exported="false" />
     </application>
 </manifest>
