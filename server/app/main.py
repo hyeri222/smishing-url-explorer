@@ -18,6 +18,13 @@ app.add_middleware(
     allow_headers=['*'],
 )
 checker = Checker()
+
+
+@app.on_event('startup')
+async def _warm_domain_lookup():
+    # 서버를 켜자마자 들어온 첫 검사에서 도메인 조회가 시간 초과로 빠지지 않게 미리 준비해 둔다
+    from .domaininfo import _get_client
+    _get_client()
 DEMO = Path(__file__).parent / 'static' / 'demo.html'
 
 

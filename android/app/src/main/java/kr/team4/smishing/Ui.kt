@@ -38,12 +38,12 @@ object C {
 }
 
 /** 판정별 표시(라벨·배경·글자색) */
-enum class Verdict(val key: String, val label: String, val bg: Int, val fg: Int, val source: String) {
-    DANGER("danger", "위험", 0xFFFEF0EF.toInt(), 0xFFC4320A.toInt(), "AI 판단"),
-    CAUTION("caution", "주의", 0xFFFFF4E0.toInt(), 0xFFB54708.toInt(), "AI 판단"),
-    SAFE("safe", "안전", 0xFFECFDF3.toInt(), 0xFF067647.toInt(), "AI 판단"),
-    OFFICIAL("official", "공식", 0xFFEAF0FF.toInt(), 0xFF1F4FD8.toInt(), "휴대폰에서 확인"),
-    UNKNOWN("unknown", "확인 못 함", 0xFFF2F4F7.toInt(), 0xFF344054.toInt(), "목적지 확인 실패");
+enum class Verdict(val key: String, val label: String, val bg: Int, val fg: Int, val source: String, val icon: Int) {
+    DANGER("danger", "위험", 0xFFFEF0EF.toInt(), 0xFFC4320A.toInt(), "AI 판단", R.drawable.ic_l_danger),
+    CAUTION("caution", "주의", 0xFFFFF4E0.toInt(), 0xFFB54708.toInt(), "AI 판단", R.drawable.ic_l_caution),
+    SAFE("safe", "안전", 0xFFECFDF3.toInt(), 0xFF067647.toInt(), "AI 판단", R.drawable.ic_l_check_circle),
+    OFFICIAL("official", "공식", 0xFFEAF0FF.toInt(), 0xFF1F4FD8.toInt(), "휴대폰에서 확인", R.drawable.ic_l_shield),
+    UNKNOWN("unknown", "확인 못 함", 0xFFF2F4F7.toInt(), 0xFF344054.toInt(), "목적지 확인 실패", R.drawable.ic_l_help);
 
     companion object {
         fun of(key: String?) = entries.firstOrNull { it.key == key } ?: UNKNOWN
@@ -169,13 +169,19 @@ object Ui {
         }
 
     /** 판정 배지(위험·주의·안전·공식·확인 못 함) */
-    fun badge(ctx: Context, v: Verdict, size: Number = 13, minWDp: Int = 58, hDp: Int = 28) =
-        text(ctx, v.label, size, v.fg, 700, center = true).apply {
-            background = rounded(ctx, v.bg, 8)
-            minWidth = dp(ctx, minWDp)
-            minHeight = dp(ctx, hDp)
-            setPadding(dp(ctx, 8), 0, dp(ctx, 8), 0)
-        }
+    /** 판정 배지: 색만으로 구분하지 않도록 아이콘 + 글자 */
+    fun badge(ctx: Context, v: Verdict, size: Number = 14, hDp: Int = 30) = LinearLayout(ctx).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        background = rounded(ctx, v.bg, 10)
+        minimumHeight = dp(ctx, hDp)
+        setPadding(dp(ctx, 7), 0, dp(ctx, 10), 0)
+        addView(icon(ctx, v.icon, 16, v.fg))
+        addView(text(ctx, v.label, size, v.fg, 700).apply { setPadding(dp(ctx, 4), 0, 0, 0) })
+    }
+
+    /** 'hxxps://www[.]naver[.]com/a/b' → 'www[.]naver[.]com' (기록 화면에서 도메인을 크게 보여 줄 때) */
+    fun hostPart(defanged: String) = defanged.substringAfter("://").substringBefore("/")
 
     /** 숫자가 든 동그라미(1, 2, 3 단계 표시) */
     fun numDot(ctx: Context, s: String, bg: Int, fg: Int, sizeDp: Int = 24) =
@@ -194,15 +200,21 @@ object Ui {
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(ctx, 1))
     }
 
-    fun icon(ctx: Context, res: Int, sizeDp: Int) = android.widget.ImageView(ctx).apply {
+    fun icon(ctx: Context, res: Int, sizeDp: Int, tint: Int? = null) = android.widget.ImageView(ctx).apply {
         setImageResource(res)
+        if (tint != null) imageTintList = android.content.res.ColorStateList.valueOf(tint)
         layoutParams = LinearLayout.LayoutParams(dp(ctx, sizeDp), dp(ctx, sizeDp))
     }
 
     /** 둥근 사각형 안에 아이콘 */
-    fun iconTile(ctx: Context, res: Int, tileDp: Int, iconDp: Int, bg: Int, radius: Int) = FrameLayout(ctx).apply {
+    fun iconTile(ctx: Context, res: Int, tileDp: Int, iconDp: Int, bg: Int, radius: Int, tint: Int? = null) = FrameLayout(ctx).apply {
         background = rounded(ctx, bg, radius)
-        addView(android.widget.ImageView(ctx).apply { setImageResource(res) },
+        minimumWidth = dp(ctx, tileDp)   // 다른 크기로 붙여도 터치 영역이 줄지 않게
+        minimumHeight = dp(ctx, tileDp)
+        addView(android.widget.ImageView(ctx).apply {
+            setImageResource(res)
+            if (tint != null) imageTintList = android.content.res.ColorStateList.valueOf(tint)
+        },
             FrameLayout.LayoutParams(dp(ctx, iconDp), dp(ctx, iconDp), Gravity.CENTER))
         layoutParams = LinearLayout.LayoutParams(dp(ctx, tileDp), dp(ctx, tileDp))
     }

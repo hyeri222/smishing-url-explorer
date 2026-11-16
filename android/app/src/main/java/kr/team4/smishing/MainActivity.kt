@@ -124,7 +124,7 @@ class MainActivity : Activity() {
 
         val bottom = Ui.col(this, 14)
         bottom.add(Ui.text(this, "누른 링크 주소는 검사를 위해 서버로 보내지며, 저장하지 않습니다. 링크는 검사 후 ${browserName()}에서 엽니다.",
-            13, C.G500, lineSpacing = 1.25f))
+            15, C.G600, lineSpacing = 1.3f))
         bottom.add(Ui.primaryButton(this, "보호 켜기") { requestRole() })
         page.add(bottom)
         root.addFill(ScrollView(this).apply { isFillViewport = true; addView(page); setBackgroundColor(C.WHITE) })
@@ -175,26 +175,27 @@ class MainActivity : Activity() {
             Ui.pad(this, 18, 16, 18, 16)
             setOnClickListener { startActivity(Intent(context, DemoSmsActivity::class.java)) }
         }
-        demo.addView(Ui.iconTile(this, R.drawable.ic_sms, 44, 24, C.G100, 14))
+        demo.addView(Ui.iconTile(this, R.drawable.ic_sms, 48, 24, C.BLUE_SOFT, 14))
         val dt = Ui.col(this, 2)
         dt.add(Ui.text(this, "문자 앱에서 시험해 보기", 17, C.INK, 700))
-        dt.add(Ui.text(this, "시연용 문자 속 링크를 눌러 보세요", 14, C.G500))
+        dt.add(Ui.text(this, "시연용 문자 속 링크를 눌러 보세요", 15, C.G500))
         demo.add(dt, 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-        demo.add(Ui.text(this, "›", 22, C.G400), ViewGroup.LayoutParams.WRAP_CONTENT)
+        demo.addView(Ui.icon(this, R.drawable.ic_l_right, 22, C.G400))
         c.add(demo)
 
         // 최근 검사
         val recentHead = Ui.row(this)
-        recentHead.add(Ui.text(this, "최근 검사", 17, weight = 700), 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-        recentHead.add(Ui.text(this, "전체 보기", 14, C.BLUE, 600).apply {
-            Ui.pad(this, 0, 6, 0, 6); setOnClickListener { go(Screen.HISTORY) }
+        recentHead.add(Ui.text(this, "최근 검사", 19, weight = 700), 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        recentHead.add(Ui.text(this, "전체 보기", 15, C.BLUE, 700).apply {
+            minHeight = Ui.dp(context, 48); gravity = Gravity.CENTER_VERTICAL
+            Ui.pad(this, 12, 0, 4, 0); setOnClickListener { go(Screen.HISTORY) }
         }, ViewGroup.LayoutParams.WRAP_CONTENT)
         val recentBox = Ui.col(this, 10)
         recentBox.add(recentHead)
         val recent = History.all(this).take(3)
         val list = Ui.card(this, 18)
         if (recent.isEmpty()) {
-            list.add(Ui.pad(Ui.text(this, "아직 검사한 링크가 없습니다", 15, C.G400, center = true), 24))
+            list.add(Ui.pad(Ui.text(this, "아직 검사한 링크가 없어요.\n문자 속 링크를 누르면 여기에 쌓여요.", 16, C.G500, lineSpacing = 1.3f, center = true), 28))
         }
         recent.forEachIndexed { i, r ->
             if (i > 0) list.addView(Ui.divider(this))
@@ -202,8 +203,8 @@ class MainActivity : Activity() {
             Ui.pad(row, 16, 14, 16, 14)
             row.addView(Ui.badge(this, r.verdict))
             val t = Ui.col(this, 2)
-            t.add(Ui.ellipsize(Ui.text(this, r.url, 15, C.INK, mono = true)))
-            t.add(Ui.text(this, "${History.when_(r.time)} · ${r.source}", 13, C.G500))
+            t.add(Ui.ellipsize(Ui.text(this, Ui.hostPart(r.url), 17, C.INK, 700)))
+            t.add(Ui.ellipsize(Ui.text(this, "${History.when_(r.time)} · ${r.source}", 14, C.G500)))
             row.add(t, 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             list.add(row)
         }
@@ -215,8 +216,8 @@ class MainActivity : Activity() {
     private fun stat(label: String, n: Int) = Ui.col(this, 2).apply {
         background = Ui.rounded(context, 0x1FFFFFFF, 14)
         Ui.pad(this, 14, 12, 14, 12)
-        add(Ui.text(context, label, 13, C.BLUE_TINT))
-        add(Ui.text(context, "${n}건", 24, C.WHITE, 800))
+        add(Ui.text(context, "${n}건", 28, C.WHITE, 800))
+        add(Ui.text(context, label, 15, C.BLUE_TINT))
     }
 
     // ---------- ④ 검사 기록 ----------
@@ -226,7 +227,7 @@ class MainActivity : Activity() {
         Ui.pad(c, 20, 22, 20, 24)
         val head = Ui.col(this, 4)
         head.add(Ui.text(this, "검사 기록", 24, weight = 800))
-        head.add(Ui.text(this, "최근 50개까지 이 휴대폰에만 저장됩니다", 14, C.G500))
+        head.add(Ui.text(this, "최근 50개까지 이 휴대폰에만 저장됩니다", 15, C.G500))
         c.add(head)
 
         val chips = Ui.row(this, 8)
@@ -253,15 +254,16 @@ class MainActivity : Activity() {
             val card = Ui.col(this, 8).apply { background = Ui.rounded(context, C.WHITE, 16, C.G200) }
             Ui.pad(card, 16, 14, 16, 14)
             val top = Ui.row(this, 8)
-            top.addView(Ui.badge(this, r.verdict).apply { setPadding(Ui.dp(context, 10), 0, Ui.dp(context, 10), 0) })
+            top.addView(Ui.badge(this, r.verdict))
             top.add(Ui.spacer(this), 0, 1, 1f)
-            top.add(Ui.text(this, History.when_(r.time), 13, C.G400), ViewGroup.LayoutParams.WRAP_CONTENT)
+            top.add(Ui.text(this, History.when_(r.time), 14, C.G500), ViewGroup.LayoutParams.WRAP_CONTENT)
             card.add(top)
-            card.add(Ui.text(this, r.url, 15, C.INK, mono = true))
-            if (r.reason.isNotBlank()) card.add(Ui.text(this, r.reason, 14, C.G600, lineSpacing = 1.2f))
+            card.add(Ui.text(this, Ui.hostPart(r.url), 18, C.INK, 700))
+            card.add(Ui.text(this, r.url, 14, C.G500, mono = true))
+            if (r.reason.isNotBlank()) card.add(Ui.text(this, r.reason, 15, C.G700, lineSpacing = 1.25f))
             list.add(card)
         }
-        if (items.isEmpty()) list.add(Ui.pad(Ui.text(this, "해당하는 기록이 없습니다", 15, C.G400, center = true), 0, 40, 0, 40))
+        if (items.isEmpty()) list.add(Ui.pad(Ui.text(this, "해당하는 기록이 없어요", 16, C.G500, center = true), 0, 40, 0, 40))
         c.add(list)
         return c
     }
@@ -278,13 +280,10 @@ class MainActivity : Activity() {
             Ui.pad(this, 18)
             setOnClickListener { startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:118"))) }
         }
-        call.addView(Ui.text(this, "118", 17, C.WHITE, 800, center = true).apply {
-            background = Ui.rounded(context, 0x1FFFFFFF, 16)
-            layoutParams = LinearLayout.LayoutParams(Ui.dp(context, 48), Ui.dp(context, 48))
-        })
+        call.addView(Ui.iconTile(this, R.drawable.ic_l_phone, 52, 26, 0x1FFFFFFF, 16, C.WHITE))
         val ct = Ui.col(this, 2)
         ct.add(Ui.text(this, "118 상담 전화", 18, C.WHITE, 700))
-        ct.add(Ui.text(this, "한국인터넷진흥원 · 24시간 무료", 14, 0xFFC7CEDB.toInt()))
+        ct.add(Ui.text(this, "한국인터넷진흥원 · 24시간 무료", 15, 0xFFC7CEDB.toInt()))
         call.add(ct, 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         c.add(call)
 
@@ -301,7 +300,7 @@ class MainActivity : Activity() {
         val protectRow = Ui.row(this, 12).apply { Ui.pad(this, 18, 16, 18, 16); setOnClickListener { requestRole() } }
         val pt = Ui.col(this, 2)
         pt.add(Ui.text(this, "링크 보호", 16, weight = 700))
-        pt.add(Ui.text(this, "기본 브라우저 역할로 링크를 먼저 받습니다", 13, C.G500))
+        pt.add(Ui.text(this, "기본 브라우저 역할로 링크를 먼저 받습니다", 14, C.G500))
         protectRow.add(pt, 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         protectRow.addView(switch(on))
         settings.add(protectRow)
@@ -321,7 +320,7 @@ class MainActivity : Activity() {
         privacy.add(Ui.text(this, "공식 기관·기업 주소는 휴대폰 안에서 확인하고 서버로 보내지 않습니다. 서버는 링크 페이지를 열지 않고 주소만 검사하며, 검사한 주소를 저장하지 않습니다.",
             14, C.G600, lineSpacing = 1.25f))
         settings.add(privacy)
-        settings.add(Ui.pad(Ui.text(this, "카카오톡처럼 자체 브라우저로 여는 앱의 링크는 검사할 수 없습니다.", 13, C.G400, lineSpacing = 1.2f), 18, 0, 18, 16))
+        settings.add(Ui.pad(Ui.text(this, "카카오톡처럼 자체 브라우저로 여는 앱의 링크는 검사할 수 없습니다.", 14, C.G500, lineSpacing = 1.2f), 18, 0, 18, 16))
         c.add(settings)
         return c
     }
@@ -347,16 +346,20 @@ class MainActivity : Activity() {
     private fun navBar() = LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         setBackgroundColor(C.WHITE)
-        listOf(Screen.HOME to "홈", Screen.HISTORY to "검사 기록", Screen.HELP to "도움말").forEach { (s, name) ->
+        listOf(Triple(Screen.HOME, "홈", R.drawable.ic_l_home), Triple(Screen.HISTORY, "검사 기록", R.drawable.ic_l_history),
+            Triple(Screen.HELP, "도움말", R.drawable.ic_l_help)).forEach { (s, name, ic) ->
             val active = screen == s
             val item = Ui.col(context, 4).apply {
                 gravity = Gravity.CENTER
-                minimumHeight = Ui.dp(context, 72)
+                minimumHeight = Ui.dp(context, 80)
                 setOnClickListener { go(s) }
+                contentDescription = name
             }
-            item.addView(View(context).apply { background = Ui.rounded(context, if (active) C.BLUE else 0, 2) },
-                LinearLayout.LayoutParams(Ui.dp(context, 28), Ui.dp(context, 4)))
-            item.addView(Ui.text(context, name, 15, if (active) C.BLUE else C.G500, 700, center = true))
+            // Material 내비게이션 바: 선택된 탭은 아이콘 뒤에 옅은 파란 알약
+            item.addView(Ui.iconTile(context, ic, 0, 24, if (active) C.BLUE_SOFT else 0, 16, if (active) C.BLUE else C.G500).apply {
+                layoutParams = LinearLayout.LayoutParams(Ui.dp(context, 60), Ui.dp(context, 32))
+            })
+            item.addView(Ui.text(context, name, 14, if (active) C.BLUE else C.G500, if (active) 700 else 600, center = true))
             addView(item, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
         }
         // 위쪽 1dp 경계선

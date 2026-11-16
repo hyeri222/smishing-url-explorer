@@ -74,12 +74,12 @@ class DemoSmsActivity : Activity() {
     private fun inbox(): View {
         val page = Ui.col(this)
         val bar = Ui.row(this, 8).apply { Ui.pad(this, 8, 0, 20, 0); minimumHeight = Ui.dp(context, 64) }
-        bar.add(Ui.text(this, "←", 22, C.G700, center = true).apply {
-            minWidth = Ui.dp(context, 48); minHeight = Ui.dp(context, 48); setOnClickListener { finish() }
+        bar.add(Ui.iconTile(this, R.drawable.ic_l_back, 48, 24, 0, 24, C.G700).apply {
+            contentDescription = "뒤로"; setOnClickListener { finish() }
         }, ViewGroup.LayoutParams.WRAP_CONTENT)
         val title = Ui.col(this)
         title.add(Ui.text(this, "메시지", 22, weight = 700))
-        title.add(Ui.text(this, "시연용 가짜 문자 · 눌러서 열어 보세요", 12, C.G400))
+        title.add(Ui.text(this, "시연용 가짜 문자 · 눌러서 열어 보세요", 14, C.G500))
         bar.add(title, 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         page.add(bar)
 
@@ -94,11 +94,11 @@ class DemoSmsActivity : Activity() {
             row.addView(avatar(m, 48))
             val mid = Ui.col(this, 4)
             val top = Ui.row(this, 8)
-            top.add(Ui.ellipsize(Ui.text(this, m.from, 16, C.INK, if (unread) 700 else 500)), 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-            top.add(Ui.text(this, m.time, 12, if (unread) C.BLUE else C.G400, if (unread) 700 else 400), ViewGroup.LayoutParams.WRAP_CONTENT)
+            top.add(Ui.ellipsize(Ui.text(this, m.from, 17, C.INK, if (unread) 700 else 500)), 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            top.add(Ui.text(this, m.time, 14, if (unread) C.BLUE else C.G500, if (unread) 700 else 400), ViewGroup.LayoutParams.WRAP_CONTENT)
             mid.add(top)
             val bottom = Ui.row(this, 8)
-            bottom.add(Ui.ellipsize(Ui.text(this, "${m.text} ${m.url}", 14, if (unread) C.G700 else C.G500, if (unread) 600 else 400)),
+            bottom.add(Ui.ellipsize(Ui.text(this, "${m.text} ${m.url}", 15, if (unread) C.G700 else C.G500, if (unread) 600 else 400)),
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             if (unread) bottom.addView(View(this).apply { background = Ui.rounded(context, C.BLUE, 5) },
                 LinearLayout.LayoutParams(Ui.dp(this, 10), Ui.dp(this, 10)))
@@ -121,20 +121,20 @@ class DemoSmsActivity : Activity() {
         val m = messages[i]
         val page = Ui.col(this)
         val bar = Ui.row(this, 8).apply { Ui.pad(this, 8, 0, 8, 0); minimumHeight = Ui.dp(context, 64) }
-        bar.add(Ui.text(this, "←", 22, C.G700, center = true).apply {
-            minWidth = Ui.dp(context, 48); minHeight = Ui.dp(context, 48); setOnClickListener { open = null; render() }
+        bar.add(Ui.iconTile(this, R.drawable.ic_l_back, 48, 24, 0, 24, C.G700).apply {
+            contentDescription = "뒤로"; setOnClickListener { open = null; render() }
         }, ViewGroup.LayoutParams.WRAP_CONTENT)
         bar.addView(avatar(m, 36))
         val title = Ui.col(this)
         title.add(Ui.ellipsize(Ui.text(this, m.from, 17, weight = 600)))
-        title.add(Ui.text(this, "시연용 가짜 문자", 12, C.G400))
+        title.add(Ui.text(this, "시연용 가짜 문자", 14, C.G500))
         bar.add(title, 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         page.add(bar)
         page.addView(Ui.divider(this))
 
         val list = Ui.col(this, 6).apply { setBackgroundColor(0xFFF7F8FA.toInt()) }
         Ui.pad(list, 14, 16, 14, 16)
-        list.add(Ui.text(this, "오늘", 12, C.G400, center = true).apply { Ui.pad(this, 0, 0, 0, 10) })
+        list.add(Ui.text(this, "오늘", 14, C.G500, center = true).apply { Ui.pad(this, 0, 0, 0, 10) })
         val bubble = Ui.col(this, 4).apply {
             background = android.graphics.drawable.GradientDrawable().apply {
                 setColor(C.WHITE); setStroke(Ui.dp(context, 1), 0xFFEAECF0.toInt())
@@ -143,13 +143,13 @@ class DemoSmsActivity : Activity() {
             }
             Ui.pad(this, 14, 12, 14, 12)
         }
-        bubble.add(Ui.text(this, m.text, 16, 0xFF1D2939.toInt(), lineSpacing = 1.25f))
-        bubble.add(Ui.text(this, m.url, 16, C.BLUE, lineSpacing = 1.25f).apply {
+        bubble.add(Ui.text(this, m.text, 17, 0xFF1D2939.toInt(), lineSpacing = 1.25f))
+        bubble.add(Ui.text(this, m.url, 17, C.BLUE, lineSpacing = 1.25f).apply {
             paint.isUnderlineText = true
             setOnClickListener { tap(m.url) }
         })
         list.add(bubble, (resources.displayMetrics.widthPixels * 0.86).toInt())
-        list.add(Ui.text(this, m.time, 12, C.G400).apply { setPadding(Ui.dp(context, 4), 0, 0, 0) })
+        list.add(Ui.text(this, m.time, 14, C.G500).apply { setPadding(Ui.dp(context, 4), 0, 0, 0) })
         page.add(ScrollView(this).apply { addView(list); isFillViewport = true; setBackgroundColor(0xFFF7F8FA.toInt()) },
             ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f)
 

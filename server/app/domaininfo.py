@@ -88,9 +88,10 @@ async def lookup(host: str, budget: float = 0.9) -> DomainInfo:
     hit = _cache.get(host)
     if hit and time.monotonic() - hit[0] < CACHE_TTL:
         return hit[1]
+    client = _get_client()  # 처음 한 번은 준비에 시간이 걸리므로 제한 시간을 재기 전에 만든다
     deadline = time.monotonic() + budget
     dns_t = asyncio.create_task(_dns_exists(host))
-    age_t = asyncio.create_task(_age_days(domain, _get_client()))
+    age_t = asyncio.create_task(_age_days(domain, client))
     pending = {dns_t, age_t}
     while pending:
         left = deadline - time.monotonic()

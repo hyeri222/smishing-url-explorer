@@ -150,7 +150,10 @@ class LinkActivity : Activity() {
             dot to label
         }
         sheet.add(list)
-        sheet.add(Ui.text(this, "페이지를 열지 않고 주소만 확인합니다", 13, C.G400))
+        sheet.add(Ui.row(this, 6).apply {
+            addView(Ui.icon(context, R.drawable.ic_l_eye_off, 16, C.G500))
+            add(Ui.text(context, "페이지를 열지 않고 주소만 확인합니다", 14, C.G500), ViewGroup.LayoutParams.WRAP_CONTENT)
+        })
         root.addView(sheet, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM))
         insets(null, sheet)
@@ -189,7 +192,7 @@ class LinkActivity : Activity() {
         val body = Ui.col(this, 18)
         Ui.pad(body, 24, 22, 24, 22)
         val why = Ui.col(this, 10)
-        why.add(Ui.text(this, "위험한 이유", 14, C.G500, 700))
+        why.add(Ui.text(this, "위험한 이유", 15, C.G500, 700))
         r.reasons.take(3).forEach { why.add(bullet(it, C.RED)) }
         body.add(why)
         body.add(urlBox(url))
@@ -197,7 +200,7 @@ class LinkActivity : Activity() {
         listOf("1. 모르는 앱이 설치됐다면 바로 삭제", "2. 입력한 비밀번호 변경", "3. 은행에 지급 정지 요청")
             .forEach { afterSteps.add(Ui.text(this, it, 15, C.G700, lineSpacing = 1.2f)) }
         afterSteps.add(Ui.outlineButton(this, "118 상담 전화하기", 44, 15) { dial118() })
-        val arrow = Ui.text(this, "+", 16, C.G400)
+        val arrow = Ui.icon(this, R.drawable.ic_l_down, 22, C.G500)
         val toggle = Ui.row(this).apply {
             add(Ui.text(this@LinkActivity, "이미 눌렀다면 이렇게 하세요", 16, C.INK, 700), 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             add(arrow, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -205,7 +208,7 @@ class LinkActivity : Activity() {
             setOnClickListener {
                 val show = afterSteps.visibility != View.VISIBLE
                 afterSteps.visibility = if (show) View.VISIBLE else View.GONE
-                arrow.text = if (show) "−" else "+"
+                arrow.rotation = if (show) 180f else 0f
             }
         }
         body.add(toggle)
@@ -230,18 +233,15 @@ class LinkActivity : Activity() {
         Ui.pad(sheet, 24, 28, 24, 28)
 
         val head = Ui.row(this, 12)
-        head.addView(Ui.text(this, "!", 24, amber, 800, center = true).apply {
-            background = Ui.rounded(context, Verdict.CAUTION.bg, 14)
-            layoutParams = LinearLayout.LayoutParams(Ui.dp(context, 44), Ui.dp(context, 44))
-        })
+        head.addView(Ui.iconTile(this, R.drawable.ic_l_caution, 52, 28, Verdict.CAUTION.bg, 16, amber))
         val titles = Ui.col(this, 2)
         titles.add(Ui.text(this, "주의가 필요한 링크예요", 22, weight = 800))
-        titles.add(Ui.text(this, "위험 점수 ${r.score ?: 0} · 아직 열지 않았어요", 14, amber, 600))
+        titles.add(Ui.text(this, "위험 점수 ${r.score ?: 0} · 아직 열지 않았어요", 15, amber, 600))
         head.add(titles, 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
         sheet.add(head)
 
         val why = Ui.col(this, 8)
-        why.add(Ui.text(this, "주의할 점", 14, C.G500, 700))
+        why.add(Ui.text(this, "주의할 점", 15, C.G500, 700))
         val reasons = r.reasons.take(3).ifEmpty { listOf("AI가 의심스러운 주소 형태라고 판단했습니다.") }
         reasons.forEach { why.add(bullet(it, amber)) }
         sheet.add(why)
@@ -266,17 +266,14 @@ class LinkActivity : Activity() {
     private fun showUnknown(url: String, r: CheckResult?) {
         val header = Ui.col(this, 14).apply { setBackgroundColor(C.G700) }
         Ui.pad(header, 24, 28, 24, 26)
-        header.addView(Ui.text(this, "?", 30, C.WHITE, 800, center = true).apply {
-            background = Ui.rounded(context, 0x29FFFFFF, 18)
-            layoutParams = LinearLayout.LayoutParams(Ui.dp(context, 56), Ui.dp(context, 56))
-        })
+        header.addView(Ui.iconTile(this, R.drawable.ic_l_help, 60, 32, 0x29FFFFFF, 18, C.WHITE))
         header.add(Ui.text(this, "이 링크를\n확인하지 못했습니다", 30, C.WHITE, 800, lineSpacing = 1.15f))
         header.add(Ui.text(this, "안전한지 알 수 없어 열지 않았어요.", 16, C.G300, lineSpacing = 1.2f))
 
         val body = Ui.col(this, 18)
         Ui.pad(body, 24, 22, 24, 22)
         val why = Ui.col(this, 10)
-        why.add(Ui.text(this, "확인하지 못한 이유", 14, C.G500, 700))
+        why.add(Ui.text(this, "확인하지 못한 이유", 15, C.G500, 700))
         val reason = if (r == null) "검사 서버가 응답하지 않았습니다. 인터넷 연결을 확인해 주세요."
                      else "단축 주소가 실제로 어디로 가는지 알아내지 못했습니다."
         why.add(bullet(reason, C.G700))
@@ -319,8 +316,9 @@ class LinkActivity : Activity() {
     private fun urlBox(url: String) = Ui.col(this, 4).apply {
         background = Ui.rounded(context, C.G100, 12)
         Ui.pad(this, 14, 12, 14, 12)
-        add(Ui.text(context, "누른 주소", 12, C.G500, 600))
-        add(Ui.text(context, defang(url), 15, C.G700, mono = true).apply { setTextIsSelectable(false) })
+        add(Ui.text(context, "누른 주소", 14, C.G500, 600))
+        add(Ui.text(context, Ui.hostPart(defang(url)), 18, C.INK, 700))
+        add(Ui.text(context, defang(url), 14, C.G600, mono = true).apply { setTextIsSelectable(false) })
     }
 
     private fun openAnyway(url: String, danger: Boolean, caution: Boolean = false) {
