@@ -431,7 +431,7 @@ function go(s){ state.screen = s; render(); }
 let request = 0;
 async function tapLink(url){
   const my = ++request;
-  const steps = ['공식 주소 목록 확인', '알려진 피싱 주소 확인', 'AI 위험 점수 계산'];
+  const steps = ['알려진 피싱 목록 확인', '단축 주소 풀기', 'AI 위험 점수 계산'];  // 서버의 실제 순서
   const rows = steps.map((s, i) => h('div', {class:'step'}, h('i', {}, i + 1), s));
   const scrim = h('div', {class:'scrim'}, h('div', {class:'sheet'},
     h('h4', {}, '링크를 검사하고 있어요'), h('div', {class:'mono', style:'font-size:14px;color:var(--g500);margin-top:6px'}, defang(url)),

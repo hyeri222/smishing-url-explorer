@@ -31,7 +31,8 @@ class LinkActivity : Activity() {
     private var request = 0  // 다시 검사할 때 이전 요청 결과를 무시하기 위한 번호
 
     companion object {
-        private val STEPS = listOf("단축 주소 풀기", "알려진 피싱 목록 확인", "AI 위험 점수 계산")
+        // 서버의 실제 순서와 같게: 피싱 목록 → 단축 주소 풀기 → AI 점수
+        private val STEPS = listOf("알려진 피싱 목록 확인", "단축 주소 풀기", "AI 위험 점수 계산")
         private const val STEP_MS = 300L  // 단계 표시 간격(최소 표시 시간 = 3단계 + 0.25초)
     }
 
